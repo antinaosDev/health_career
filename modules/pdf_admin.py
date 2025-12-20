@@ -50,14 +50,20 @@ class GlobalReport(FPDF):
         self.ln(4)
 
     def add_chart_pair(self, img_path1, img_path2, title1="", title2=""):
+        # Check for page break
+        if self.get_y() > 210:
+            self.add_page()
+            
         y = self.get_y()
         # Chart 1
-        if img_path1 and os.path.exists(img_path1):
-            self.image(img_path1, x=10, y=y, w=90)
-        else:
-            self.set_xy(10, y+20)
-            self.set_font('Arial', 'I', 8)
-            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+        if img_path1:
+             if os.path.exists(img_path1):
+                self.image(img_path1, x=10, y=y, w=90)
+             else:
+                self.set_xy(10, y+20)
+                self.set_font('Arial', 'I', 8)
+                self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+        # Empty space if None (cleaner)
             
         # Chart 2
         if img_path2:
