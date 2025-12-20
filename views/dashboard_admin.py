@@ -716,11 +716,32 @@ def app():
                 # Actually, defined figures in previous scopes (fig_cat, fig_tipo, etc) are valid ONLY if they executed.
                 # However, Python scope in Streamlit is function-level, so if they ran, they exist.
                 
+                # Ensure fig_sex exists (failsafe for export scope)
+                if locals().get('fig_sex') is None:
+                    try:
+                        # Robust Column Search (Same as UI)
+                        target_cols_fs = ['GENERO', 'GÉNERO', 'SEXO', 'SEX']
+                        found_col_fs = None
+                        col_map_fs = {c.strip().upper(): c for c in df_users.columns}
+                        
+                        for t in target_cols_fs:
+                            if t in col_map_fs:
+                                found_col_fs = col_map_fs[t]
+                                break
+                        
+                        if found_col_fs:
+                            df_users[found_col_fs] = df_users[found_col_fs].fillna("No Definido")
+                            sex_counts = df_users[found_col_fs].value_counts().reset_index()
+                            sex_counts.columns = ['Género', 'Cantidad']
+                            fig_sex = px.pie(sex_counts, names='Género', values='Cantidad', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
+                    except Exception as e_gen:
+                        print(f"Error regenerating fig_sex: {e_gen}")
+
                 chart_paths = {}
                 charts_to_save = {
                     'cat_counts': locals().get('fig_cat'),
                     'tipo_counts': locals().get('fig_tipo'),
-                    'sex_counts': locals().get('fig_sex'),
+                    'sex_counts': locals().get('fig_sex') if locals().get('fig_sex') else (fig_sex if 'fig_sex' in locals() else None),
                     'cat_cost': locals().get('fig_cc'),
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
