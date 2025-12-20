@@ -56,23 +56,20 @@ class GlobalReport(FPDF):
             
         y = self.get_y()
         # Chart 1
-        if img_path1:
-             if os.path.exists(img_path1):
-                self.image(img_path1, x=10, y=y, w=90)
-             else:
-                self.set_xy(10, y+20)
-                self.set_font('Arial', 'I', 8)
-                self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
-        # Empty space if None (cleaner)
+        if img_path1 and os.path.exists(img_path1):
+            self.image(img_path1, x=10, y=y, w=90)
+        elif title1: # Only show placeholder if we expected a chart (has title)
+            self.set_xy(10, y+20)
+            self.set_font('Arial', 'I', 8)
+            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
             
         # Chart 2
-        if img_path2:
-            if os.path.exists(img_path2):
-                self.image(img_path2, x=110, y=y, w=90)
-            else:
-                self.set_xy(110, y+20)
-                self.set_font('Arial', 'I', 8)
-                self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+        if img_path2 and os.path.exists(img_path2):
+            self.image(img_path2, x=110, y=y, w=90)
+        elif title2:
+            self.set_xy(110, y+20)
+            self.set_font('Arial', 'I', 8)
+            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
             
         self.set_xy(10, y+65) # Move down (assuming chart height ~60)
         

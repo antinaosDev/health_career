@@ -351,16 +351,17 @@ def app():
         with st.container(border=True):
             st.markdown("**Distribución por Género**")
             
-            # Robust Column Search (Case insensitive, Accents)
+            # Robust Column Search (Case insensitive, Accents, Strip)
             target_cols = ['GENERO', 'GÉNERO', 'SEXO', 'SEX']
             found_col = None
+            sex_counts = None # Ensure it exists for export scope
             
-            # Normalize df columns for search but keep original for access
-            df_cols_upper = {c.upper(): c for c in df_users.columns}
+            # Create map of Cleaned -> Original
+            col_map = {c.strip().upper(): c for c in df_users.columns}
             
             for t in target_cols:
-                if t in df_cols_upper:
-                    found_col = df_cols_upper[t]
+                if t in col_map:
+                    found_col = col_map[t]
                     break
             
             if found_col:
