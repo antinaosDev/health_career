@@ -324,7 +324,7 @@ def app():
 
     # 4. CHARTS - DOTACIÓN & CONTRATOS
     st.markdown("### 📈 Dotación y Contratos")
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
 
     with c1:
         with st.container(border=True):
@@ -343,6 +343,21 @@ def app():
                 tipo_counts.columns = ['Tipo', 'Cantidad']
                 fig_tipo = px.pie(tipo_counts, names='Tipo', values='Cantidad',  hole=0.4, color_discrete_sequence=px.colors.qualitative.Safe)
                 st.plotly_chart(fig_tipo, use_container_width=True)
+
+    with c3:
+        with st.container(border=True):
+            st.markdown("**Distribución por Género**")
+            # Determine column name (GENERO or SEXO)
+            col_sexo = 'GENERO' if 'GENERO' in df_users.columns else 'SEXO'
+            
+            if col_sexo in df_users.columns:
+                sex_counts = df_users[col_sexo].value_counts().reset_index()
+                sex_counts.columns = ['Género', 'Cantidad']
+                # Use a distinct color scale, e.g., Pastel
+                fig_sex = px.pie(sex_counts, names='Género', values='Cantidad', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
+                st.plotly_chart(fig_sex, use_container_width=True)
+            else:
+                st.info("No hay datos de género disponibles.")
 
     # 4.2 FINANCIAL BURDEN (NEW)
     st.markdown("### 💰 Análisis de Carga Presupuestaria")
