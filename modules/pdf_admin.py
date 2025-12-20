@@ -114,6 +114,13 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
         "Tipos de Contrato"
     )
     
+    pdf.add_chart_pair(
+        charts_paths.get('sex_counts'),
+        None,
+        "Distribución por Género",
+        ""
+    )
+    
     # --- 3. ANALISIS FINANCIERO ---
     pdf.chapter_title("Análisis Financiero")
     pdf.add_chart_pair(

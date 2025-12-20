@@ -703,6 +703,7 @@ def app():
                 charts_to_save = {
                     'cat_counts': locals().get('fig_cat'),
                     'tipo_counts': locals().get('fig_tipo'),
+                    'sex_counts': locals().get('fig_sex'),
                     'cat_cost': locals().get('fig_cc'),
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
@@ -715,6 +716,7 @@ def app():
                 fallback_data = {
                     'cat_counts': locals().get('cat_counts'),
                     'tipo_counts': locals().get('tipo_counts'),
+                    'sex_counts': locals().get('sex_counts'),
                     'cat_cost': locals().get('df_cat_cost'),
                     'prof_cost': locals().get('df_prof_cost'),
                     'prof_avg': locals().get('df_prof_avg'),
