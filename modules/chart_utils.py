@@ -73,6 +73,13 @@ def generate_fallback_charts_batch(kpi_data):
             "Tipos de Contrato", "temp_tipo_counts.png"
         )
         
+    # 2.1 Dist Genero (NEW)
+    if 'sex_counts' in kpi_data:
+        paths['sex_counts'] = save_pie_chart(
+            kpi_data['sex_counts'], 'Género', 'Cantidad',
+            "Distribución por Género", "temp_sex_counts.png"
+        )
+        
     # 3. Costo Categoria
     if 'cat_cost' in kpi_data:
         paths['cat_cost'] = save_bar_chart(

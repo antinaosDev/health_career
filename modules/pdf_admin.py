@@ -18,7 +18,7 @@ class GlobalReport(FPDF):
         self.set_font('Arial', 'B', 16)
         self.cell(0, 10, 'Informe de Gestión Global', 0, 1, 'C')
         self.set_font('Arial', '', 10)
-        self.cell(0, 5, 'Departamento de Salud Familiar', 0, 1, 'C')
+        self.cell(0, 5, 'Departamento de Salud Municipal Cholchol', 0, 1, 'C')
         
         self.set_font('Arial', 'I', 8)
         self.cell(0, 10, f'Generado el: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M")}', 0, 1, 'C')
