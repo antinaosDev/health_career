@@ -39,7 +39,7 @@ class GlobalReport(FPDF):
         self.cell(0, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
         
         # Right: Page
-        self.cell(0, 10, f'Página {self.page_no()}/{self.alias_nb_pages}', 0, 0, 'R')
+        self.cell(0, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
 
     def chapter_title(self, label):
         self.set_font('Arial', 'B', 12)
@@ -60,12 +60,13 @@ class GlobalReport(FPDF):
             self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
             
         # Chart 2
-        if img_path2 and os.path.exists(img_path2):
-            self.image(img_path2, x=110, y=y, w=90)
-        else:
-            self.set_xy(110, y+20)
-            self.set_font('Arial', 'I', 8)
-            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+        if img_path2:
+            if os.path.exists(img_path2):
+                self.image(img_path2, x=110, y=y, w=90)
+            else:
+                self.set_xy(110, y+20)
+                self.set_font('Arial', 'I', 8)
+                self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
             
         self.set_xy(10, y+65) # Move down (assuming chart height ~60)
         

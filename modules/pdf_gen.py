@@ -42,7 +42,7 @@ class CareerReport(FPDF):
         self.cell(0, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
         
         # Right: Page
-        self.cell(0, 10, f'Página {self.page_no()}/{self.alias_nb_pages}', 0, 0, 'R')
+        self.cell(0, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
 
     def chapter_title(self, label):
         self.set_font('Arial', 'B', 12)
