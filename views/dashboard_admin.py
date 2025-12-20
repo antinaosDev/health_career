@@ -63,38 +63,121 @@ def app():
     st.markdown("Visión general del estado de la dotación y costos.")
     st.divider()
 
-    # --- PROGRAMMER SECTION: CREATE USER ---
+    # --- PROGRAMMER SECTION: USER MANAGEMENT ---
     if st.session_state.get("usuario_rol") == "PROGRAMADOR":
         with st.expander("👤 Gestión de Usuarios - Login (Solo Programador)", expanded=False):
-            st.info("Agregar un nuevo usuario al registro de autenticación (Tabla 'login').")
+            st.info("Administración de usuarios de acceso (Tabla 'login').")
             
-            with st.form("frm_add_user_login"):
-                c_u1, c_u2 = st.columns(2)
-                with c_u1:
-                    new_rut = st.text_input("RUT (ID)", help="Ej: 12345678-9")
-                    new_user = st.text_input("Nombre de Usuario (USER)", help="Ej: jperez")
-                with c_u2:
-                    new_pass = st.text_input("Contraseña (PASS)", type="password")
-                    new_rol = st.selectbox("Rol (ROL)", ["USUARIO", "ADMIN", "PROGRAMADOR"])
+            tab_create, tab_manage = st.tabs(["🆕 Crear Usuario", "📝 Editar / Eliminar"])
+            
+            # --- TAB 1: CREATE ---
+            with tab_create:
+                with st.form("frm_add_user_login"):
+                    c_u1, c_u2 = st.columns(2)
+                    with c_u1:
+                        new_rut = st.text_input("RUT (ID)", help="Ej: 12345678-9")
+                        new_user = st.text_input("Nombre de Usuario (USER)", help="Ej: jperez")
+                    with c_u2:
+                        new_pass = st.text_input("Contraseña (PASS)", type="password")
+                        new_rol = st.selectbox("Rol (ROL)", ["USUARIO", "ADMIN", "PROGRAMADOR"])
+                    
+                    submitted_user = st.form_submit_button("💾 Crear Usuario")
+                    
+                    if submitted_user:
+                        if new_rut and new_user and new_pass:
+                            from firebase_bd import ingresar_registro_bd
+                            data_login = {
+                                "ID": new_rut,
+                                "USER": new_user,
+                                "PASS": new_pass,
+                                "ROL": new_rol
+                            }
+                            try:
+                                ingresar_registro_bd("login", data_login)
+                                st.success(f"✅ Usuario '{new_user}' creado correctamente.")
+                            except Exception as e:
+                                st.error(f"❌ Error al crear usuario: {e}")
+                        else:
+                            st.warning("⚠️ Todos los campos son obligatorios.")
+
+            # --- TAB 2: EDIT / DELETE ---
+            with tab_manage:
+                from firebase_bd import leer_registro, actualizar_registro, borrar_registro
                 
-                submitted_user = st.form_submit_button("💾 Crear Usuario")
+                # Fetch fresh data
+                login_data = leer_registro("login")
                 
-                if submitted_user:
-                    if new_rut and new_user and new_pass:
-                        from firebase_bd import ingresar_registro_bd
-                        data_login = {
-                            "ID": new_rut,
-                            "USER": new_user,
-                            "PASS": new_pass,
-                            "ROL": new_rol
-                        }
-                        try:
-                            ingresar_registro_bd("login", data_login)
-                            st.success(f"✅ Usuario '{new_user}' creado correctamente en Firebase.")
-                        except Exception as e:
-                            st.error(f"❌ Error al crear usuario: {e}")
+                if not login_data:
+                    st.warning("No hay usuarios registrados en la tabla 'login'.")
+                else:
+                    # Handle Firebase List/Dict weirdness
+                    # If keys are mostly integers, it might be a list.
+                    # Best to normalize to dict {key: val}
+                    if isinstance(login_data, list):
+                        # Convert list to dict with index as key
+                        login_dict = {str(i): v for i, v in enumerate(login_data) if v is not None}
                     else:
-                        st.warning("⚠️ Todos los campos son obligatorios.")
+                        login_dict = login_data
+
+                    # Create options list: "USER (ID) [Key]"
+                    # We store key in a lookup or Tuple
+                    user_opts = []
+                    for k, v in login_dict.items():
+                        if isinstance(v, dict):
+                            label = f"{v.get('USER', 'N/A')} ({v.get('ID', 'N/A')})"
+                            user_opts.append((k, label))
+                    
+                    if not user_opts:
+                        st.info("No se encontraron registros válidos para editar.")
+                    else:
+                        selected_opt = st.selectbox("Seleccionar Usuario", user_opts, format_func=lambda x: x[1])
+                        
+                        if selected_opt:
+                            sel_key = selected_opt[0]
+                            sel_data = login_dict[sel_key]
+                            
+                            st.markdown("---")
+                            st.write(f"**Editando:** {sel_data.get('USER')} (Key: `{sel_key}`)")
+                            
+                            col_e1, col_e2 = st.columns(2)
+                            with col_e1:
+                                edit_id = st.text_input("ID / RUT", value=sel_data.get("ID", ""), key=f"id_{sel_key}")
+                                edit_user = st.text_input("Usuario", value=sel_data.get("USER", ""), key=f"u_{sel_key}")
+                            with col_e2:
+                                edit_pass = st.text_input("Contraseña", value=sel_data.get("PASS", ""), key=f"p_{sel_key}")
+                                
+                                curr_rol = sel_data.get("ROL", "USUARIO")
+                                roles = ["USUARIO", "ADMIN", "PROGRAMADOR"]
+                                try: idx_r = roles.index(curr_rol)
+                                except: idx_r = 0
+                                edit_rol = st.selectbox("Rol", roles, index=idx_r, key=f"r_{sel_key}")
+                            
+                            c_btn1, c_btn2 = st.columns([1,1])
+                            
+                            with c_btn1:
+                                if st.button("💾 Actualizar Datos", type="primary", key=f"btn_upd_{sel_key}"):
+                                    new_data = {
+                                        "ID": edit_id,
+                                        "USER": edit_user,
+                                        "PASS": edit_pass,
+                                        "ROL": edit_rol
+                                    }
+                                    try:
+                                        actualizar_registro("login", new_data, sel_key)
+                                        st.success("✅ Datos actualizados correctamente.")
+                                        st.rerun()
+                                    except Exception as e:
+                                        st.error(f"Error al actualizar: {e}")
+                                        
+                            with c_btn2:
+                                if st.button("🗑️ Eliminar Usuario", type="secondary", key=f"btn_del_{sel_key}"):
+                                    try:
+                                        borrar_registro("login", sel_key)
+                                        st.warning(f"Usuario {edit_user} eliminado.")
+                                        st.rerun()
+                                    except Exception as e:
+                                        st.error(f"Error al eliminar: {e}")
+
 
     # --- MAINTENANCE SECTION ---
     from funciones import recalcular_todo, es_contrato_activo
