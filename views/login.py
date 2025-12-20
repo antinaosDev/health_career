@@ -32,7 +32,7 @@ def app():
             st.divider()
             
             with st.form("login_form", border=False):
-                usuario = st.text_input("Usuario", placeholder="Ej: JUAN.PEREZ")
+                rut_input = st.text_input("Usuario", placeholder="Ej: usuario.1")
                 password = st.text_input("Contraseña", type="password", placeholder="••••••••")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
