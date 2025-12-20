@@ -1,0 +1,109 @@
+--- DEBUGGING RUT: 18581575-7 ---
+Categoria: B, Limite: 150
+--- DUMPING ALL TRAININGS FOR 18581575-7 ---
+Found: Aspectos Legales del D.S.43, Almacenamiento de
+Sustancias Peligrosas | Year: 2023 | Ctx: Ingreso a Planta | Pts: 31.5
+Found: Diplomado en Gestión Ambiental Municipal | Year: 2023 | Ctx: Ingreso a Planta | Pts: 180.0
+Found: Creditos Tasa de Interes y Carga Anual Equivalente | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Cosecha y Cultivo de Agua | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Formulacion y evaluacion de proyectos | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Curso Sistema de Evaluacion de Impacto Ambiental | Year: 2023 | Ctx: Ingreso a Planta | Pts: 18.0
+Found: Curso Areas de Influencia en SEIA_Agosto2020 | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Transicion de OHSAS 18001:2007 a ISO 45001:2018 | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Topografía con Drones | Year: 2023 | Ctx: Ingreso a Planta | Pts: 30.0
+Found: Fundamentos sobre D.S. 148, Manejo de Residuos
+Peligrosos | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: ArcGIS aplicado al Medio Ambiente | Year: 2023 | Ctx: Ingreso a Planta | Pts: 72.0
+Found: Magister en Sistemas Integrados de Gestión de la
+Calidad | Year: 2023 | Ctx: Ingreso a Planta | Pts: 180.0
+Found: Endeudamiento Juvenil | Year: 2023 | Ctx: Ingreso a Planta | Pts: 45.0
+Found: Derechos y Deberes del Consumidor | Year: 2023 | Ctx: Ingreso a Planta | Pts: 18.0
+Found: Manejo de Sustancias y Residuos Peligrosos | Year: 2023 | Ctx: Ingreso a Planta | Pts: 31.5
+Found: Auditoría interna SST | Year: 2023 | Ctx: Ingreso a Planta | Pts: 31.5
+Found: GEORREFERENCIACIÓN Y GESTIÓN DE INFORMACIÓN
+TERRITORIAL EN EMERGENCIAS Y DESASTRES | Year: 2024 | Ctx: Cambio de Nivel | Pts: 81.9
+Found: Aplicación de competencias transversales | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Normativa Ambiental Aplicable en el SEIA julio 2023 | Year: 2023 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: DESARROLLO DE HABILIDADES DE LOGÍSTICA PARA EMT | Year: 2024 | Ctx: Cambio de Nivel | Pts: 113.4
+Found: Manejo de sustancias peligrosas para trabajadores | Year: 2024 | Ctx: Cambio de Nivel | Pts: 31.5
+Found: Finanzas y presupuesto municipal: Ley de
+transparencia, legalidad del gasto y diseño de
+instrumentos de planificación comunal con enfoque
+intercultural | Year: 2023 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Gestion directiva en los sgsst | Year: 2024 | Ctx: Cambio de Nivel | Pts: 31.5
+Found: Competencias digitales para profecionales | Year: 2023 | Ctx: Cambio de Nivel | Pts: 144.0
+Found: Introducción a los Sistemas de Información para la Salud | Year: 2024 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Sistema de Rendición Electrónica de Cuentas - Rol
+Ejecutor Público | Year: 2023 | Ctx: Cambio de Nivel | Pts: 31.5
+Found: Orientación en Prevención de Riesgos | Year: 2024 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Salud Familiar y Visitas Domiciliarias Integrales en
+APS (Nivel Técnico Alto)(27 Hrs Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Planes de Seguridad del
+Saneamiento – Resilientes al Clima (PSS-RC) | Year: 2024 | Ctx: Cambio de Nivel | Pts: 144.0
+Found: Intervención comunitaria con enfoque de promoción
+de la salud y prevención de las dependencias en
+personas mayores (Nivel Técnico Alto - 27 Hrs
+Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Estrategias de Cuidado integral centrado en las
+personas para la prevención y manejo de la
+cronicidad en contexto de multimorbilidad ECICEP
+(Nivel Técnico Alto) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Programacion python ára analisis de datos | Year: 2024 | Ctx: Cambio de Nivel | Pts: 162.0
+Found: Curso de compras públicas | Year: 2023 | Ctx: Cambio de Nivel | Pts: 81.0
+Found: Curso sobre Agua, Saneamiento, Higiene y
+la Resiliencia al Clima en Establecimientos de Salud | Year: 2024 | Ctx: Cambio de Nivel | Pts: 144.0
+Found: Gestión del Riesgo de Emergencias en Salud y Desastres. GERESD | Year: 2024 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Analisis estadistico con python | Year: 2024 | Ctx: Cambio de Nivel | Pts: 162.0
+Found: Descripción de proyectos en el SEIA | Year: 2023 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Promoción de la Salud en APS (Nivel Técnico Alto - 28
+Hrs Cronológicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Detección, evaluación y manejo inicial del riesgo
+suicida en APS (Nivel Técnico Alto)(27 Hrs
+Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Python para Ciencia de Datos | Year: 2024 | Ctx: Cambio de Nivel | Pts: 37.5
+Found: Clima Laboral y Salud mental | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Visualización y comunicación de insights | Year: 2024 | Ctx: Cambio de Nivel | Pts: 162.0
+Found: SQL para analisis de datos | Year: 2024 | Ctx: Cambio de Nivel | Pts: 162.0
+Found: Programa Gestión para la SST en Servicios Financieros | Year: 2024 | Ctx: Cambio de Nivel | Pts: 180.0
+Found: Tratamiento de no Conformidades, Análisis de Causas y Acciones Correctivas | Year: 2024 | Ctx: Cambio de Nivel | Pts: 31.5
+Found: Efectos del mercurio en la salud humana y el medio ambiente
+y consideraciones bajo el Convenio de Minamata, edición 2023 | Year: 2024 | Ctx: Cambio de Nivel | Pts: 144.0
+Found: Introducción y aplicación de los 8 Principios Rectores
+de la transformación digital del sector de la salud | Year: 2024 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Cuidados Paliativos (Nivel Técnico Alto - 27 Hrs
+Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Fundamentos de Marketing Digital | Year: 2023 | Ctx: Cambio de Nivel | Pts: 96.0
+Found: Curso de Limpieza y desinfección ambiental en establecimiento de salud
+ | Year: 2024 | Ctx: Cambio de Nivel | Pts: 67.5
+Found: DIPLOMA SCRUM MASTER | Year: 2024 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Prevención y Control de Infecciones en emergencias
+de salud y desastres | Year: 2024 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Control de Riesgos en labores Administrativas de Oficina. | Year: 2024 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Proceso de consulta indígena en el SEIA julio 2023 | Year: 2023 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Participación Ciudadana en el Sistema de Evaluación
+de Impacto Ambiental julio 2023 | Year: 2023 | Ctx: Cambio de Nivel | Pts: 45.0
+Found: Equipos Saludables y Buen Trato Laboral (27 Hrs
+Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Políticas de drogas y alcohol en la salud pública/
+aplicación de pruebas de detección (Nivel Técnico
+Alto)(27 Hrs Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Acceso y uso de la información científica en salud | Year: 2024 | Ctx: Cambio de Nivel | Pts: 144.0
+Found: Promoción de la Salud y Determinantes Sociales
+(Nivel Técnico Alto - 27 Hrs Pedagógicas) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Ambientes Laborales y estrategias de equipos
+saludables (Nivel Técnico Alto) | Year: 2023 | Ctx: Cambio de Nivel | Pts: 117.0
+Found: Tratamiento de no Conformidades, Análisis de Causas y Acciones Correctivas | Year: 2024 | Ctx: Cambio de Nivel | Pts: 31.5
+--- END DUMP ---
+Puntajes Planta (16): [('Aspectos Legales del D.S.43, Almacenamiento de\nSustancias Peligrosas', 31.5), ('Diplomado en Gestión Ambiental Municipal', 180.0), ('Creditos Tasa de Interes y Carga Anual Equivalente', 45.0), ('Cosecha y Cultivo de Agua', 45.0), ('Formulacion y evaluacion de proyectos', 45.0), ('Curso Sistema de Evaluacion de Impacto Ambiental', 18.0), ('Curso Areas de Influencia en SEIA_Agosto2020', 45.0), ('Transicion de OHSAS 18001:2007 a ISO 45001:2018', 45.0), ('Topografía con Drones', 30.0), ('Fundamentos sobre D.S. 148, Manejo de Residuos\nPeligrosos', 45.0), ('ArcGIS aplicado al Medio Ambiente', 72.0), ('Magister en Sistemas Integrados de Gestión de la\nCalidad', 180.0), ('Endeudamiento Juvenil', 45.0), ('Derechos y Deberes del Consumidor', 18.0), ('Manejo de Sustancias y Residuos Peligrosos', 31.5), ('Auditoría interna SST', 31.5)]
+Suma Planta: 907.5
+Antiguedad: 3, Bienios: 1
+Saldos por Año (Raw): [(2023, 1981.5), (2024, 2361.3), (2025, 0)]
+Diffs vs Limit (150): [(2023, 1831.5), (2024, 2211.3), (2025, -150)]
+Lista Final (Diff Ajustada): [(2023, 0), (2024, 0), (2025, 0)]
+Saldo Final: 3892.8
+Valor Bienios: 534
+Base (Bienios+Planta): 1441.5
+Año 2023: 150 pts (Limit 150 + Diff 0)
+Año 2024: 150 pts (Limit 150 + Diff 0)
+Año 2025: 150 pts (Limit 150 + Diff 0)
+--- TOTAL FINAL: 1891.5 ---
