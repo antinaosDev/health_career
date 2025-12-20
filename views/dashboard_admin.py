@@ -63,6 +63,39 @@ def app():
     st.markdown("Visión general del estado de la dotación y costos.")
     st.divider()
 
+    # --- PROGRAMMER SECTION: CREATE USER ---
+    if st.session_state.get("usuario_rol") == "PROGRAMADOR":
+        with st.expander("👤 Gestión de Usuarios - Login (Solo Programador)", expanded=False):
+            st.info("Agregar un nuevo usuario al registro de autenticación (Tabla 'login').")
+            
+            with st.form("frm_add_user_login"):
+                c_u1, c_u2 = st.columns(2)
+                with c_u1:
+                    new_rut = st.text_input("RUT (ID)", help="Ej: 12345678-9")
+                    new_user = st.text_input("Nombre de Usuario (USER)", help="Ej: jperez")
+                with c_u2:
+                    new_pass = st.text_input("Contraseña (PASS)", type="password")
+                    new_rol = st.selectbox("Rol (ROL)", ["USUARIO", "ADMIN", "PROGRAMADOR"])
+                
+                submitted_user = st.form_submit_button("💾 Crear Usuario")
+                
+                if submitted_user:
+                    if new_rut and new_user and new_pass:
+                        from firebase_bd import ingresar_registro_bd
+                        data_login = {
+                            "ID": new_rut,
+                            "USER": new_user,
+                            "PASS": new_pass,
+                            "ROL": new_rol
+                        }
+                        try:
+                            ingresar_registro_bd("login", data_login)
+                            st.success(f"✅ Usuario '{new_user}' creado correctamente en Firebase.")
+                        except Exception as e:
+                            st.error(f"❌ Error al crear usuario: {e}")
+                    else:
+                        st.warning("⚠️ Todos los campos son obligatorios.")
+
     # --- MAINTENANCE SECTION ---
     from funciones import recalcular_todo, es_contrato_activo
 
