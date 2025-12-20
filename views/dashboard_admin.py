@@ -102,7 +102,7 @@ def app():
 
             # --- TAB 2: EDIT / DELETE ---
             with tab_manage:
-                from firebase_bd import leer_registro, actualizar_registro, borrar_registro
+                from firebase_bd import actualizar_registro, borrar_registro
                 
                 # Fetch fresh data
                 login_data = leer_registro("login")
