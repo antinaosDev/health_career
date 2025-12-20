@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from firebase_bd import leer_registro
 from indices import indices_niveles, sueldos_reajustados_2025
 from datetime import datetime
+import time
 
 def format_clp(value):
     try:
@@ -95,6 +96,8 @@ def app():
                             try:
                                 ingresar_registro_bd("login", data_login)
                                 st.success(f"✅ Usuario '{new_user}' creado correctamente.")
+                                time.sleep(1.5)
+                                st.rerun()
                             except Exception as e:
                                 st.error(f"❌ Error al crear usuario: {e}")
                         else:
@@ -165,6 +168,7 @@ def app():
                                     try:
                                         actualizar_registro("login", new_data, sel_key)
                                         st.success("✅ Datos actualizados correctamente.")
+                                        time.sleep(1.5)
                                         st.rerun()
                                     except Exception as e:
                                         st.error(f"Error al actualizar: {e}")
@@ -174,6 +178,7 @@ def app():
                                     try:
                                         borrar_registro("login", sel_key)
                                         st.warning(f"Usuario {edit_user} eliminado.")
+                                        time.sleep(1.5)
                                         st.rerun()
                                     except Exception as e:
                                         st.error(f"Error al eliminar: {e}")
