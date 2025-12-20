@@ -347,17 +347,30 @@ def app():
     with c3:
         with st.container(border=True):
             st.markdown("**Distribución por Género**")
-            # Determine column name (GENERO or SEXO)
-            col_sexo = 'GENERO' if 'GENERO' in df_users.columns else 'SEXO'
             
-            if col_sexo in df_users.columns:
-                sex_counts = df_users[col_sexo].value_counts().reset_index()
+            # Robust Column Search (Case insensitive, Accents)
+            target_cols = ['GENERO', 'GÉNERO', 'SEXO', 'SEX']
+            found_col = None
+            
+            # Normalize df columns for search but keep original for access
+            df_cols_upper = {c.upper(): c for c in df_users.columns}
+            
+            for t in target_cols:
+                if t in df_cols_upper:
+                    found_col = df_cols_upper[t]
+                    break
+            
+            if found_col:
+                # Handle potentially None/Empty values
+                df_users[found_col] = df_users[found_col].fillna("No Definido")
+                sex_counts = df_users[found_col].value_counts().reset_index()
                 sex_counts.columns = ['Género', 'Cantidad']
-                # Use a distinct color scale, e.g., Pastel
                 fig_sex = px.pie(sex_counts, names='Género', values='Cantidad', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
                 st.plotly_chart(fig_sex, use_container_width=True)
             else:
                 st.info("No hay datos de género disponibles.")
+                with st.expander("Ver Columnas Detectadas"):
+                    st.write(list(df_users.columns))
 
     # 4.2 FINANCIAL BURDEN (NEW)
     st.markdown("### 💰 Análisis de Carga Presupuestaria")
