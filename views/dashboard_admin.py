@@ -214,8 +214,24 @@ def app():
         st.error("No hay datos de usuarios disponibles.")
         return
 
-    df_users = pd.DataFrame(users_raw.values())
-    df_conts = pd.DataFrame(conts_raw.values())
+    # Filter Active Data for Charts & Analytics
+    all_conts = list(conts_raw.values()) if conts_raw else []
+    active_conts = [c for c in all_conts if es_contrato_activo(c)]
+    
+    active_ruts = set()
+    for c in active_conts:
+        r = str(c.get('RUT', '')).strip()
+        if r: active_ruts.add(r)
+        
+    all_users = list(users_raw.values()) if users_raw else []
+    active_users = [u for u in all_users if str(u.get('RUT', '')).strip() in active_ruts]
+
+    if not active_users:
+        st.warning("⚠️ No se encontraron usuarios con contratos vigentes.")
+        return
+
+    df_users = pd.DataFrame(active_users)
+    df_conts = pd.DataFrame(active_conts)
 
     # Clean numeric fields
     df_users['SUELDO_BASE'] = pd.to_numeric(df_users['SUELDO_BASE'].astype(str).str.replace(r'[$,]', '', regex=True), errors='coerce').fillna(0)
