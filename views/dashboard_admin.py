@@ -249,7 +249,7 @@ def app():
     count_honorarios_ok = 0
     count_honorarios_err = 0
 
-    for c in conts_raw.values():
+    for c in active_conts:
         if str(c.get('TIPO_CONTRATO', '')).strip().upper() == 'HONORARIO':
             try:
                 rut_c = c.get('RUT')
@@ -257,20 +257,19 @@ def app():
                 horas = int(c.get('HORAS', 0))
                 
                 if cat in ['A', 'B', 'C', 'D', 'E', 'F'] and horas > 0:
-                    if es_contrato_activo(c): # Check expiration
-                        base_n15 = sueldos_reajustados_2025.get(15, {}).get(cat, 0)
-                        if base_n15 > 0:
-                            est_base = (base_n15 / 44) * horas
-                            # Metric: Needs full amount (Base + APS)
-                            total_honorarios_est += (est_base * 2)
-                            
-                            # Dataframe Injection: Needs only BASE (charts apply *2 themselves)
-                            honorarios_income_map[rut_c] = honorarios_income_map.get(rut_c, 0) + est_base
-                            
-                            count_honorarios_ok += 1
-                        else:
-                            count_honorarios_err += 1
-                    # If expired, we ignore
+                    # Logic assumes active because it's in active_conts
+                    base_n15 = sueldos_reajustados_2025.get(15, {}).get(cat, 0)
+                    if base_n15 > 0:
+                        est_base = (base_n15 / 44) * horas
+                        # Metric: Needs full amount (Base + APS)
+                        total_honorarios_est += (est_base * 2)
+                        
+                        # Dataframe Injection: Needs only BASE (charts apply *2 themselves)
+                        honorarios_income_map[rut_c] = honorarios_income_map.get(rut_c, 0) + est_base
+                        
+                        count_honorarios_ok += 1
+                    else:
+                        count_honorarios_err += 1
                 else:
                     count_honorarios_err += 1
             except:
