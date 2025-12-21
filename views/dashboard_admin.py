@@ -240,6 +240,21 @@ def app():
     df_users['SUELDO_BASE'] = pd.to_numeric(df_users['SUELDO_BASE'].astype(str).str.replace(r'[$,]', '', regex=True), errors='coerce').fillna(0)
     df_users['BIENIOS'] = pd.to_numeric(df_users['BIENIOS'], errors='coerce').fillna(0)
     df_conts['HORAS'] = pd.to_numeric(df_conts['HORAS'], errors='coerce').fillna(0)
+    
+    # --- MERGE DEPENDENCY FROM CONTRACTS TO USERS ---
+    # We need to add 'DEPENDENCIA' to df_users for the analysis chart.
+    # Logic: Take the 'DEPENDENCIA' from the first found active contract for each RUT.
+    if 'DEPENDENCIA' in df_conts.columns and 'RUT' in df_conts.columns:
+        # Create a map RUT -> DEPENDENCIA (drop duplicates keeps first found)
+        # Assuming df_conts contains active contracts already filtered or we filter now.
+        # df_conts is created from active_conts, so it's safe.
+        rut_dep_map = df_conts.drop_duplicates('RUT').set_index('RUT')['DEPENDENCIA'].to_dict()
+        
+        # Apply map
+        df_users['DEPENDENCIA'] = df_users['RUT'].map(rut_dep_map).fillna("No Asignado")
+    else:
+        # Fallback if column is missing in contracts for some reason
+        df_users['DEPENDENCIA'] = "Sin Información"
 
     # --- INJECT HONORARIOS ESTIMATED INCOME INTO DF_USERS ---
     # Goal: Add estimated Honorario salary to SUELDO_BASE so charts reflect it.
