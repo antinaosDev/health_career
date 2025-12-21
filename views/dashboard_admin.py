@@ -831,10 +831,13 @@ def app():
                 df_dep_pdf = df_dep_pdf.sort_values('Costo Total', ascending=False)
                 
                 # 3. Create Table Image directly (User requested Table Fallback)
-                # Format for display
-                df_dep_table = df_dep_pdf.copy()
+                print("DEBUG: Generating Dependency Table Image...")
+                # Select only the columns we want to show BEFORE renaming
+                df_dep_table = df_dep_pdf[['DEPENDENCIA', 'Costo Total']].copy()
+                
                 df_dep_table['Costo Total'] = df_dep_table['Costo Total'].apply(lambda x: f"${int(x):,}".replace(',', '.'))
-                df_dep_table.columns = ['Unidad / Dependencia', 'Gasto Total']
+                # Use rename which is safer than list assignment
+                df_dep_table = df_dep_table.rename(columns={'DEPENDENCIA': 'Unidad / Dependencia', 'Costo Total': 'Gasto Total'})
                 
                 # Use top 15 to fit on page nicely
                 df_dep_table = df_dep_table.head(15)
