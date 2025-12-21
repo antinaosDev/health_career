@@ -830,18 +830,29 @@ def app():
                 df_dep_pdf['Costo Total'] = df_dep_pdf['SUELDO_BASE'] * 2 
                 df_dep_pdf = df_dep_pdf.sort_values('Costo Total', ascending=False)
                 
-                # 3. Create Figure directly
-                fig_dep_pdf = px.bar(
-                    df_dep_pdf, 
-                    x='DEPENDENCIA', 
-                    y='Costo Total', 
-                    text_auto='.2s',
-                    title="Gasto Total por Dependencia",
-                    color='Costo Total',
-                    color_continuous_scale='Blues'
+                # 3. Create Table Image directly (User requested Table Fallback)
+                # Format for display
+                df_dep_table = df_dep_pdf.copy()
+                df_dep_table['Costo Total'] = df_dep_table['Costo Total'].apply(lambda x: f"${int(x):,}".replace(',', '.'))
+                df_dep_table.columns = ['Unidad / Dependencia', 'Gasto Total']
+                
+                # Use top 15 to fit on page nicely
+                df_dep_table = df_dep_table.head(15)
+                
+                from modules.chart_utils import save_table_image
+                table_fname = "temp_dep_table.png"
+                dep_table_path = save_table_image(
+                    df_dep_table, 
+                    "Gasto Total por Dependencia (Top 15)", 
+                    table_fname
                 )
-
-                chart_paths = {}
+                
+                chart_paths = {
+                    'dep_cost': dep_table_path
+                }
+                
+                temp_files.append(table_fname)
+                
                 # Map using the explicitly created figure
                 charts_to_save = {
                     'cat_counts': locals().get('fig_cat'),
@@ -851,7 +862,7 @@ def app():
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
                     'cat_avg': locals().get('fig_avg_c'),
-                    'dep_cost': fig_dep_pdf 
+                    # 'dep_cost': Handled manually via Table Image
                 }
                 
                 # Fallback Data Preparation (Must match keys)
