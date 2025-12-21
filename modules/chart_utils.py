@@ -109,3 +109,42 @@ def generate_fallback_charts_batch(kpi_data):
         )
         
     return paths
+
+def save_table_image(df, title, filename, col_widths=None):
+    """
+    Saves a matplotlib table as an image.
+    df: Dataframe to render
+    title: Title of the table
+    filename: Output filename
+    """
+    fig, ax = plt.subplots(figsize=(10, len(df)*0.5 + 1.5)) # Dynamic height
+    ax.axis('off')
+    # ax.axis('tight')
+    
+    # Add title
+    plt.title(title, fontsize=12, pad=10, color='#333333', weight='bold')
+    
+    # Create table
+    table = ax.table(cellText=df.values, colLabels=df.columns, loc='center', cellLoc='center', colColours=['#006DB6']*len(df.columns))
+    
+    # Style
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1, 1.8) # More vertical spacing
+    
+    # Detailed Styling
+    for (row, col), cell in table.get_celld().items():
+        if row == 0:
+            cell.set_text_props(color='white', weight='bold')
+            cell.set_facecolor('#006DB6')
+            cell.set_edgecolor('white')
+        else:
+            cell.set_edgecolor('#DDDDDD')
+            cell.set_text_props(color='#444444')
+            if row % 2 == 0:
+                cell.set_facecolor('#F9F9F9')
+    
+    plt.tight_layout()
+    plt.savefig(filename, dpi=150, bbox_inches='tight')
+    plt.close()
+    return os.path.abspath(filename)
