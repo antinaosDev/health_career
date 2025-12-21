@@ -818,32 +818,31 @@ def app():
                     except Exception as e_gen:
                         print(f"Error regenerating fig_sex: {e_gen}")
 
-                # --- EMERGENCY REGEN FOR FIG_DEP ---
-                if locals().get('fig_dep') is None:
-                    try:
-                        # Force column check
-                        dep_col_target = 'DEPENDENCIA'
-                        if dep_col_target not in df_users.columns:
-                             df_users[dep_col_target] = "No Definido (E)"
-                        
-                        df_dep_cost_ex = df_users.groupby(dep_col_target)['SUELDO_BASE'].sum().reset_index()
-                        df_dep_cost_ex['Costo Total'] = df_dep_cost_ex['SUELDO_BASE'] * 2 
-                        df_dep_cost_ex = df_dep_cost_ex.sort_values('Costo Total', ascending=False)
-                        
-                        fig_dep = px.bar(
-                            df_dep_cost_ex, 
-                            x=dep_col_target, 
-                            y='Costo Total', 
-                            text_auto='.2s',
-                            title=f"Gasto Total por {dep_col_target}",
-                            color='Costo Total',
-                            color_continuous_scale='Blues'
-                        )
-                    except Exception as e_dep:
-                         print(f"Error regenerating fig_dep: {e_dep}")
-                         fig_dep = None
+                # --- EXPLICIT RE-BUILD OF DEPENDENCY CHART FOR PDF ---
+                # We do this unconditionally to ensure it exists for the report.
+                
+                # 1. Ensure 'DEPENDENCIA' column exists
+                if 'DEPENDENCIA' not in df_users.columns:
+                    df_users['DEPENDENCIA'] = "No Definido (PDF)"
+
+                # 2. Build Dataframe for Chart
+                df_dep_pdf = df_users.groupby('DEPENDENCIA')['SUELDO_BASE'].sum().reset_index()
+                df_dep_pdf['Costo Total'] = df_dep_pdf['SUELDO_BASE'] * 2 
+                df_dep_pdf = df_dep_pdf.sort_values('Costo Total', ascending=False)
+                
+                # 3. Create Figure directly
+                fig_dep_pdf = px.bar(
+                    df_dep_pdf, 
+                    x='DEPENDENCIA', 
+                    y='Costo Total', 
+                    text_auto='.2s',
+                    title="Gasto Total por Dependencia",
+                    color='Costo Total',
+                    color_continuous_scale='Blues'
+                )
 
                 chart_paths = {}
+                # Map using the explicitly created figure
                 charts_to_save = {
                     'cat_counts': locals().get('fig_cat'),
                     'tipo_counts': locals().get('fig_tipo'),
@@ -852,12 +851,10 @@ def app():
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
                     'cat_avg': locals().get('fig_avg_c'),
-                    'dep_cost': locals().get('fig_dep') if locals().get('fig_dep') else (fig_dep if 'fig_dep' in locals() else None)
+                    'dep_cost': fig_dep_pdf 
                 }
                 
-                temp_files = []
-                
-                # Prepare fallback data dict
+                # Fallback Data Preparation (Must match keys)
                 fallback_data = {
                     'cat_counts': locals().get('cat_counts'),
                     'tipo_counts': locals().get('tipo_counts'),
@@ -866,7 +863,7 @@ def app():
                     'prof_cost': locals().get('df_prof_cost'),
                     'prof_avg': locals().get('df_prof_avg'),
                     'cat_avg': locals().get('df_cat_avg'),
-                    'dep_cost': locals().get('df_dep_cost')
+                    'dep_cost': df_dep_pdf # Use our explicitly built DF
                 }
 
                 temp_files = []
@@ -877,12 +874,19 @@ def app():
                     if fig:
                         fname = f"temp_{key}.png"
                         try:
-                            fig.write_image(fname, scale=2)
+                            # Use explicit scale for better PDF quality
+                            fig.write_image(fname, scale=2, engine='kaleido')
                             chart_paths[key] = os.path.abspath(fname)
                             temp_files.append(fname)
                         except Exception as e:
-                            kaleido_failed = True
                             print(f"Kaleido failed for {key}: {e}")
+                            # Try without engine arg if kaleido specific fail
+                            try:
+                                fig.write_image(fname, format='png')
+                                chart_paths[key] = os.path.abspath(fname)
+                                temp_files.append(fname)
+                            except:
+                                kaleido_failed = True
                 
                 # If ANY chart failed, use Fallback for ALL to maintain consistent style, 
                 # or just for missing ones? Better to use fallback for all or missing. 
