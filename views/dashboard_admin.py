@@ -820,6 +820,8 @@ def app():
 
                 # --- EXPLICIT RE-BUILD OF DEPENDENCY CHART FOR PDF ---
                 # We do this unconditionally to ensure it exists for the report.
+                temp_files = [] # Initialize here to avoid scope errors
+                
                 
                 # 1. Ensure 'DEPENDENCIA' column exists
                 if 'DEPENDENCIA' not in df_users.columns:
@@ -880,7 +882,7 @@ def app():
                     'dep_cost': df_dep_pdf # Use our explicitly built DF
                 }
 
-                temp_files = []
+
                 kaleido_failed = False
                 
                 # Attempt Plotly Generation
