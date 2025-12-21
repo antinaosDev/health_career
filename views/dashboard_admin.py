@@ -241,20 +241,39 @@ def app():
     df_users['BIENIOS'] = pd.to_numeric(df_users['BIENIOS'], errors='coerce').fillna(0)
     df_conts['HORAS'] = pd.to_numeric(df_conts['HORAS'], errors='coerce').fillna(0)
     
+    
     # --- MERGE DEPENDENCY FROM CONTRACTS TO USERS ---
     # We need to add 'DEPENDENCIA' to df_users for the analysis chart.
-    # Logic: Take the 'DEPENDENCIA' from the first found active contract for each RUT.
-    if 'DEPENDENCIA' in df_conts.columns and 'RUT' in df_conts.columns:
-        # Create a map RUT -> DEPENDENCIA (drop duplicates keeps first found)
-        # Assuming df_conts contains active contracts already filtered or we filter now.
-        # df_conts is created from active_conts, so it's safe.
-        rut_dep_map = df_conts.drop_duplicates('RUT').set_index('RUT')['DEPENDENCIA'].to_dict()
+    if not df_conts.empty and 'RUT' in df_conts.columns:
+        # Normalize columns just in case
+        cont_cols = {c.upper(): c for c in df_conts.columns}
         
-        # Apply map
-        df_users['DEPENDENCIA'] = df_users['RUT'].map(rut_dep_map).fillna("No Asignado")
+        # Try to find 'DEPENDENCIA'
+        dep_col = cont_cols.get('DEPENDENCIA')
+        if not dep_col:
+             # Try alternatives
+             for alt in ['UNIDAD', 'DEPARTAMENTO', 'AREA']:
+                 if alt in cont_cols:
+                     dep_col = cont_cols[alt]
+                     break
+        
+        if dep_col:
+            # Create a map RUT -> DEPENDENCIA (drop duplicates keeps first found)
+            rut_dep_map = df_conts.drop_duplicates('RUT').set_index('RUT')[dep_col].to_dict()
+            df_users['DEPENDENCIA'] = df_users['RUT'].map(rut_dep_map).fillna("No Asignado")
+            
+            # If map failed (e.g. RUT format mismatch), try normalizing RUTs
+            if df_users['DEPENDENCIA'].value_counts().get('No Asignado', 0) == len(df_users):
+                 # Try stripping/cleaning RUTs
+                 df_conts['RUT_CLEAN'] = df_conts['RUT'].astype(str).str.strip().str.upper()
+                 df_users['RUT_CLEAN'] = df_users['RUT'].astype(str).str.strip().str.upper()
+                 
+                 rut_dep_map_clean = df_conts.drop_duplicates('RUT_CLEAN').set_index('RUT_CLEAN')[dep_col].to_dict()
+                 df_users['DEPENDENCIA'] = df_users['RUT_CLEAN'].map(rut_dep_map_clean).fillna("No Asignado")
+        else:
+            df_users['DEPENDENCIA'] = "Sin Información (Col Missing)"
     else:
-        # Fallback if column is missing in contracts for some reason
-        df_users['DEPENDENCIA'] = "Sin Información"
+        df_users['DEPENDENCIA'] = "Sin Contratos"
 
     # --- INJECT HONORARIOS ESTIMATED INCOME INTO DF_USERS ---
     # Goal: Add estimated Honorario salary to SUELDO_BASE so charts reflect it.

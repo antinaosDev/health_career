@@ -49,36 +49,55 @@ class GlobalReport(FPDF):
         self.set_text_color(0)
         self.ln(2) # Reduced gap
 
-    def add_chart_pair(self, img_path1, img_path2, title1="", title2=""):
+    def add_chart_pair(self, img_path1, img_path2, title1="", title2="", height=60):
         # Check for page break (Threshold lowered to avoid footer overlap)
-        if self.get_y() > 200:
+        if self.get_y() > 220:
             self.add_page()
             
-        y = self.get_y()
+        y_start = self.get_y()
+        max_y_used = y_start
+        
         # Chart 1
         if img_path1 and os.path.exists(img_path1):
-            self.image(img_path1, x=10, y=y, w=90)
-        elif title1: # Only show placeholder if we expected a chart (has title)
-            self.set_xy(10, y+20)
+            self.image(img_path1, x=10, y=y_start, w=90)
+            max_y_used = max(max_y_used, y_start + height) # Approx image height
+        elif title1: 
+            # Placeholder
+            self.set_xy(10, y_start + 10)
             self.set_font('Arial', 'I', 8)
-            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+            self.cell(90, 20, "Gráfico no disponible", 1, 0, 'C') # Smaller box
+            max_y_used = max(max_y_used, y_start + 35) # Less space for placeholder
             
         # Chart 2
         if img_path2 and os.path.exists(img_path2):
-            self.image(img_path2, x=110, y=y, w=90)
+            self.image(img_path2, x=110, y=y_start, w=90)
+            max_y_used = max(max_y_used, y_start + height)
         elif title2:
-            self.set_xy(110, y+20)
+            self.set_xy(110, y_start + 10)
             self.set_font('Arial', 'I', 8)
-            self.cell(90, 10, "Gráfico no disponible", 1, 0, 'C')
+            self.cell(90, 20, "Gráfico no disponible", 1, 0, 'C')
+            max_y_used = max(max_y_used, y_start + 35)
             
-        self.set_xy(10, y+65) # Move down (assuming chart height ~60)
+        # Titles Position - Dynamic based on what was drawn
+        # Ideally, we want titles ALIGNED, so we use the max Y.
+        
+        # If both are placeholders, we don't need 65mm space. 
+        # But if one is image, we need 65mm.
+        
+        # Force a reasonable gap if at least one image exists
+        has_any_image = (img_path1 and os.path.exists(img_path1)) or (img_path2 and os.path.exists(img_path2))
+        
+        title_y = y_start + height + 2 if has_any_image else y_start + 35
+        
+        self.set_xy(10, title_y)
         
         # Titles
-        self.set_font('Arial', 'B', 9)
+        self.set_font('Arial', 'B', 8)
         self.cell(90, 5, title1, 0, 0, 'C')
         self.cell(10, 5, "", 0, 0) # Gap
         self.cell(90, 5, title2, 0, 1, 'C')
-        self.ln(10)
+        
+        self.ln(5) # Modest gap after section
 
 def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path):
     pdf = GlobalReport(logo_path, logo_c_path)
