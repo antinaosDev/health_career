@@ -473,6 +473,45 @@ def app():
              fig_avg_c.update_layout(showlegend=False)
              st.plotly_chart(fig_avg_c, use_container_width=True)
 
+    # 4.2.2 DEPENDENCY ANALYSIS (NEW)
+    st.markdown("### 🏢 Análisis por Dependencia")
+    st.caption("Gasto total mensual (Sueldo Base + APS) agrupado por unidad/dependencia.")
+    
+    # Robust Column Search for DEPENDENCIA
+    target_cols_dep = ['DEPENDENCIA', 'UNIDAD', 'DEPARTAMENTO', 'AREA']
+    found_col_dep = None
+    
+    col_map_dep = {c.strip().upper(): c for c in df_users.columns}
+    
+    for t in target_cols_dep:
+        if t in col_map_dep:
+            found_col_dep = col_map_dep[t]
+            break
+            
+    fig_dep = None
+    df_dep_cost = None
+    
+    if found_col_dep:
+        # Calculate Cost
+        df_dep_cost = df_users.groupby(found_col_dep)['SUELDO_BASE'].sum().reset_index()
+        df_dep_cost['Costo Total'] = df_dep_cost['SUELDO_BASE'] * 2 # Add APS
+        df_dep_cost = df_dep_cost.sort_values('Costo Total', ascending=False)
+        
+        with st.container(border=True):
+             fig_dep = px.bar(
+                df_dep_cost, 
+                x=found_col_dep, 
+                y='Costo Total', 
+                text_auto='.2s',
+                title=f"Gasto Total por {found_col_dep}",
+                color='Costo Total',
+                color_continuous_scale='Blues'
+             )
+             fig_dep.update_layout(showlegend=False)
+             st.plotly_chart(fig_dep, use_container_width=True)
+    else:
+        st.info("No se encontró información de Dependencia/Unidad.")
+
     # 4.3 OTHER STATS (Levels)
     with st.container(border=True):
         st.markdown("**Distribución por Nivel Carrera Funcionaria**")
@@ -745,7 +784,8 @@ def app():
                     'cat_cost': locals().get('fig_cc'),
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
-                    'cat_avg': locals().get('fig_avg_c')
+                    'cat_avg': locals().get('fig_avg_c'),
+                    'dep_cost': locals().get('fig_dep')
                 }
                 
                 temp_files = []
@@ -758,7 +798,8 @@ def app():
                     'cat_cost': locals().get('df_cat_cost'),
                     'prof_cost': locals().get('df_prof_cost'),
                     'prof_avg': locals().get('df_prof_avg'),
-                    'cat_avg': locals().get('df_cat_avg')
+                    'cat_avg': locals().get('df_cat_avg'),
+                    'dep_cost': locals().get('df_dep_cost')
                 }
 
                 temp_files = []

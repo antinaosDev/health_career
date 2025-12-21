@@ -35,15 +35,10 @@ class HonorariosReport(FPDF):
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
         
-        # Left: System
-        self.cell(0, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
-        
-        # Center: Developer
-        self.set_x(0)
-        self.cell(0, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
-        
-        # Right: Page
-        self.cell(0, 10, f'Página {self.page_no()}/{self.alias_nb_pages}', 0, 0, 'R')
+        # 3 column layout
+        self.cell(65, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
+        self.cell(60, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
+        self.cell(65, 10, f'Página {self.page_no()}/{self.alias_nb_pages}', 0, 0, 'R')
 
     def chapter_title(self, label):
         self.set_font('Arial', 'B', 12)
@@ -107,6 +102,7 @@ def create_pdf_honorarios(user_data, honorario_conts, estimated_salary_data, log
     pdf.ln(5)
 
     # --- SALARY ESTIMATION ---
+    if pdf.get_y() > 230: pdf.add_page()
     pdf.chapter_title("Estimación de Sueldo Mensual")
     pdf.set_font('Arial', '', 10)
     
@@ -133,6 +129,7 @@ def create_pdf_honorarios(user_data, honorario_conts, estimated_salary_data, log
 
     # --- CONTRACTS SECTION ---
     if honorario_conts:
+        if pdf.get_y() > 230: pdf.add_page()
         pdf.chapter_title("Detalle de Contratos (Honorarios)")
         pdf.set_font('Arial', 'B', 8)
         # Added new column: Estado/Días

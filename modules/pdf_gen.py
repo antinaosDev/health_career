@@ -34,15 +34,10 @@ class CareerReport(FPDF):
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
         
-        # Left: System
-        self.cell(0, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
-        
-        # Center: Developer
-        self.set_x(0)
-        self.cell(0, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
-        
-        # Right: Page
-        self.cell(0, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
+        # 3 column layout
+        self.cell(65, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
+        self.cell(60, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
+        self.cell(65, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
 
     def chapter_title(self, label):
         self.set_font('Arial', 'B', 12)
@@ -131,6 +126,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
 
     # --- SCORE EXPLANATION & BREAKDOWN (NEW) ---
     if breakdown_data:
+        if pdf.get_y() > 230: pdf.add_page()
         pdf.chapter_title("Análisis Detallado de Puntaje")
         
         # Explanation Text
@@ -182,6 +178,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
          planta = summary_dict.get('BASE_PLANTA', 0)
          
          # Table of Components
+         if pdf.get_y() > 240: pdf.add_page()
          pdf.chapter_title("Resumen de Componentes Base")
          pdf.set_font('Arial', '', 10)
          
@@ -215,6 +212,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
 
     # --- CONTRACTS SECTION ---
     if conts_data:
+        if pdf.get_y() > 230: pdf.add_page()
         pdf.chapter_title("Resumen Contractual")
         pdf.set_font('Arial', 'B', 9)
         w_c = [40, 60, 30, 30, 30]
@@ -268,6 +266,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
         pdf.ln(90)
 
     # --- SUMMARY & TRAINING DETAILS ---
+    if pdf.get_y() > 230: pdf.add_page()
     pdf.chapter_title("Detalle Histórico de Capacitaciones")
     pdf.set_font('Arial', '', 10)
     

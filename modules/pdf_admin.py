@@ -31,15 +31,15 @@ class GlobalReport(FPDF):
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
         
-        # Left: System
-        self.cell(0, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
+        # 3 column layout for footer (Total width ~190mm)
+        # Left: System (65mm)
+        self.cell(65, 10, 'Sistema de Gestión de Carrera Funcionaria', 0, 0, 'L')
         
-        # Center: Developer
-        self.set_x(0)
-        self.cell(0, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
+        # Center: Developer (60mm)
+        self.cell(60, 10, 'Desarrollado por Alain Antinao Sepúlveda', 0, 0, 'C')
         
-        # Right: Page
-        self.cell(0, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
+        # Right: Page (65mm)
+        self.cell(65, 10, f'Página {self.page_no()}/{{nb}}', 0, 0, 'R')
 
     def chapter_title(self, label):
         self.set_font('Arial', 'B', 12)
@@ -47,11 +47,11 @@ class GlobalReport(FPDF):
         self.set_text_color(255)
         self.cell(0, 8, f'  {label}', 0, 1, 'L', 1)
         self.set_text_color(0)
-        self.ln(4)
+        self.ln(2) # Reduced gap
 
     def add_chart_pair(self, img_path1, img_path2, title1="", title2=""):
-        # Check for page break
-        if self.get_y() > 210:
+        # Check for page break (Threshold lowered to avoid footer overlap)
+        if self.get_y() > 200:
             self.add_page()
             
         y = self.get_y()
@@ -110,6 +110,12 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
     pdf.ln(10)
     
     # --- 2. DOTACION Y CONTRATOS ---
+    # No explicit check needed if add_chart_pair handles it, 
+    # but chapter_title might be orphaned using add_chart_pair check logic alone 
+    # IF add_chart_pair doesn't start with add_page.
+    # But add_chart_pair checks y before image.
+    # Safer to check here too.
+    if pdf.get_y() > 220: pdf.add_page()
     pdf.chapter_title("Análisis Estructural")
     pdf.add_chart_pair(
         charts_paths.get('cat_counts'), 
@@ -126,6 +132,7 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
     )
     
     # --- 3. ANALISIS FINANCIERO ---
+    if pdf.get_y() > 220: pdf.add_page()
     pdf.chapter_title("Análisis Financiero")
     pdf.add_chart_pair(
         charts_paths.get('cat_cost'), 
@@ -137,6 +144,7 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
     pdf.add_page()
     
     # --- 4. COSTOS UNITARIOS ---
+    if pdf.get_y() > 230: pdf.add_page()
     pdf.chapter_title("Costos Unitarios Promedio")
     pdf.add_chart_pair(
         charts_paths.get('prof_avg'), 
@@ -145,7 +153,19 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
         "Costo Promedio: Categorías"
     )
     
+
+    # --- 4.1 ANALISIS POR DEPENDENCIA (NEW) ---
+    if pdf.get_y() > 230: pdf.add_page()
+    pdf.chapter_title("Análisis por Dependencia")
+    pdf.add_chart_pair(
+        charts_paths.get('dep_cost'),
+        None,
+        "Gasto Total por Unidad/Dependencia",
+        ""
+    )
+    
     # --- 5. PREDICTIVO DE ASCENSOS ---
+    if pdf.get_y() > 230: pdf.add_page()
     pdf.chapter_title("Proyección de Ascensos")
     
     # Table 1: Inmediatos
