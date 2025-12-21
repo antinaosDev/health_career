@@ -61,7 +61,7 @@ def get_days_to_bienio(rut, current_bienios, df_conts):
 
 def app():
     # Init Chart Holders safe for export scope
-    fig_cat = fig_tipo = fig_sex = fig_cc = fig_cp = fig_avg_p = fig_avg_c = None
+    fig_cat = fig_tipo = fig_sex = fig_cc = fig_cp = fig_avg_p = fig_avg_c = fig_dep = None
     
     st.markdown("## 📊 Panel de Gestión Global")
     st.markdown("Visión general del estado de la dotación y costos.")
@@ -802,16 +802,14 @@ def app():
                 # Ensure fig_sex exists (failsafe for export scope)
                 if locals().get('fig_sex') is None:
                     try:
-                        # Robust Column Search (Same as UI)
+                        # ... existing fig_sex regeneration ...
                         target_cols_fs = ['GENERO', 'GÉNERO', 'SEXO', 'SEX']
                         found_col_fs = None
                         col_map_fs = {c.strip().upper(): c for c in df_users.columns}
-                        
                         for t in target_cols_fs:
                             if t in col_map_fs:
                                 found_col_fs = col_map_fs[t]
                                 break
-                        
                         if found_col_fs:
                             df_users[found_col_fs] = df_users[found_col_fs].fillna("No Definido")
                             sex_counts = df_users[found_col_fs].value_counts().reset_index()
@@ -819,6 +817,31 @@ def app():
                             fig_sex = px.pie(sex_counts, names='Género', values='Cantidad', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
                     except Exception as e_gen:
                         print(f"Error regenerating fig_sex: {e_gen}")
+
+                # --- EMERGENCY REGEN FOR FIG_DEP ---
+                if locals().get('fig_dep') is None:
+                    try:
+                        # Force column check
+                        dep_col_target = 'DEPENDENCIA'
+                        if dep_col_target not in df_users.columns:
+                             df_users[dep_col_target] = "No Definido (E)"
+                        
+                        df_dep_cost_ex = df_users.groupby(dep_col_target)['SUELDO_BASE'].sum().reset_index()
+                        df_dep_cost_ex['Costo Total'] = df_dep_cost_ex['SUELDO_BASE'] * 2 
+                        df_dep_cost_ex = df_dep_cost_ex.sort_values('Costo Total', ascending=False)
+                        
+                        fig_dep = px.bar(
+                            df_dep_cost_ex, 
+                            x=dep_col_target, 
+                            y='Costo Total', 
+                            text_auto='.2s',
+                            title=f"Gasto Total por {dep_col_target}",
+                            color='Costo Total',
+                            color_continuous_scale='Blues'
+                        )
+                    except Exception as e_dep:
+                         print(f"Error regenerating fig_dep: {e_dep}")
+                         fig_dep = None
 
                 chart_paths = {}
                 charts_to_save = {
@@ -829,7 +852,7 @@ def app():
                     'prof_cost': locals().get('fig_cp'),
                     'prof_avg': locals().get('fig_avg_p'),
                     'cat_avg': locals().get('fig_avg_c'),
-                    'dep_cost': locals().get('fig_dep')
+                    'dep_cost': locals().get('fig_dep') if locals().get('fig_dep') else (fig_dep if 'fig_dep' in locals() else None)
                 }
                 
                 temp_files = []
