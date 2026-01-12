@@ -258,4 +258,8 @@ def create_global_pdf(kpis, charts_paths, upgrades_data, logo_path, logo_c_path)
         pdf.set_font('Arial', 'I', 9)
         pdf.cell(0, 8, "No se proyectan cambios en el corto plazo.", 0, 1)
 
-    return pdf.output(dest='S').encode('latin-1')
+    out = pdf.output(dest='S')
+    # If library returns bytes/bytearray, return as is. If string, encode.
+    if isinstance(out, (bytes, bytearray)):
+        return bytes(out)
+    return out.encode('latin-1')
