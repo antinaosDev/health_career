@@ -236,6 +236,14 @@ def app():
     df_users = pd.DataFrame(active_users)
     df_conts = pd.DataFrame(active_conts)
 
+    # Ensure columns exist
+    if 'SUELDO_BASE' not in df_users.columns:
+        df_users['SUELDO_BASE'] = 0
+    if 'BIENIOS' not in df_users.columns:
+        df_users['BIENIOS'] = 0
+    if 'HORAS' not in df_conts.columns:
+        df_conts['HORAS'] = 0
+
     # Clean numeric fields
     df_users['SUELDO_BASE'] = pd.to_numeric(df_users['SUELDO_BASE'].astype(str).str.replace(r'[$,]', '', regex=True), errors='coerce').fillna(0)
     df_users['BIENIOS'] = pd.to_numeric(df_users['BIENIOS'], errors='coerce').fillna(0)
