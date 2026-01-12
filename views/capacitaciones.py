@@ -5,7 +5,7 @@ import plotly.express as px
 from firebase_bd import leer_registro, ingresar_registro_bd, eliminar_registro_bd, actualizar_registro
 from clases import Capacitacion
 from funciones import carga_masiva, puntaje_nv
-from funciones import carga_masiva, puntaje_nv
+
 from datetime import datetime
 import time
 
@@ -339,4 +339,5 @@ def app():
                         with st.spinner("Procesando carga masiva..."):
                             res = carga_masiva(uploaded_file)
                             st.success(res)
+                            time.sleep(2)
                             st.rerun()

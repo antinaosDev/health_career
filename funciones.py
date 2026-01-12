@@ -101,7 +101,9 @@ def calculo_años(fecha_inicio, fecha_termino=None):
         # Logic Restore: (fin - inicio).days // 365
         return (fin - inicio).days // 365
     except Exception as e:
-        print(f"[ERROR] calculo_años: {e} | inicio: {fecha_inicio} - fin: {fecha_termino}")
+        msg = f"[ERROR] calculo_años: {e} | inicio: {fecha_inicio} - fin: {fecha_termino}"
+        print(msg)
+        # st.toast(msg) # Optional: uncomment for UI feedback
         return 0
 
 #Calculo de puntajes 
