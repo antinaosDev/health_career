@@ -693,75 +693,81 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
             caps_map[key] = (idc, cap)
 
         for idv_l in capacitacion_v:
-            idv = limpiar_nans(idv_l)
-            if not idv: continue
-
-            rut_excel = str(idv.get('RUT', '')).replace('.', '').strip()
-            affected_ruts.add(rut_excel)
-            nombre = str(idv.get('NOMBRE_CAPACITACION', '')).strip().upper()
-            
-            key = (rut_excel, nombre)
-            
-            category = usuarios_por_rut.get(rut_excel, '')
-            
-            cap_obj = Capacitacion(
-                rut_excel,
-                category,
-                idv.get('NOMBRE_CAPACITACION'),
-                idv.get('ENTIDAD'),
-                idv.get('HORAS'),
-                idv.get('NIVEL_TECNICO'),
-                idv.get('NOTA'),
-                idv.get('AÑO_INICIO', 0),
-                idv.get('AÑO_PRESENTACION', 0),
-                idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
-                idv.get('ES_POSTGRADO')
-            )
-            candidate_dict = cap_obj.crear_dict_capacitacion()
-
-            if key in caps_map:
-                idc, cap_db = caps_map[key]
-                # CHECK DIFF BEFORE UPDATE
-                is_different = False
-                for k, v in candidate_dict.items():
-                    if k in ['PJE_NV_TEC', 'PJE_HORAS', 'PJE_NOTA', 'PJE_POND']: continue
-                    
-                    val_excel = str(v).strip().upper() if isinstance(v, str) else str(v)
-                    val_db = cap_db.get(k)
-                    val_db_norm = str(val_db).strip().upper() if val_db is not None else ''
-                    
-                    if val_excel != val_db_norm:
-                        is_different = True
-                        break
+            try:
+                idv = limpiar_nans(idv_l)
+                if not idv: continue
+    
+                rut_excel = str(idv.get('RUT', '')).replace('.', '').strip()
+                affected_ruts.add(rut_excel)
+                nombre = str(idv.get('NOMBRE_CAPACITACION', '')).strip().upper()
                 
-                if is_different:
-                    actualizar_registro('capacitaciones', candidate_dict, idc)
-            else:
-                ingresar_registro_bd('capacitaciones', candidate_dict)
+                key = (rut_excel, nombre)
+                
+                category = usuarios_por_rut.get(rut_excel, '')
+                
+                cap_obj = Capacitacion(
+                    rut_excel,
+                    category,
+                    idv.get('NOMBRE_CAPACITACION'),
+                    idv.get('ENTIDAD'),
+                    idv.get('HORAS'),
+                    idv.get('NIVEL_TECNICO'),
+                    idv.get('NOTA'),
+                    idv.get('AÑO_INICIO', 0),
+                    idv.get('AÑO_PRESENTACION', 0),
+                    idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
+                    idv.get('ES_POSTGRADO')
+                )
+                candidate_dict = cap_obj.crear_dict_capacitacion()
+    
+                if key in caps_map:
+                    idc, cap_db = caps_map[key]
+                    # CHECK DIFF BEFORE UPDATE
+                    is_different = False
+                    for k, v in candidate_dict.items():
+                        if k in ['PJE_NV_TEC', 'PJE_HORAS', 'PJE_NOTA', 'PJE_POND']: continue
+                        
+                        val_excel = str(v).strip().upper() if isinstance(v, str) else str(v)
+                        val_db = cap_db.get(k)
+                        val_db_norm = str(val_db).strip().upper() if val_db is not None else ''
+                        
+                        if val_excel != val_db_norm:
+                            is_different = True
+                            break
+                    
+                    if is_different:
+                        actualizar_registro('capacitaciones', candidate_dict, idc)
+                else:
+                    ingresar_registro_bd('capacitaciones', candidate_dict)
+            except Exception as e:
+                print(f"❌ Error procesando capacitación (RUT {idv_l.get('RUT')}): {e}")
 
     else:
         for idv_l in capacitacion_v:
-            idv = limpiar_nans(idv_l)
-            if not idv: continue
-            
-            rut_excel = str(idv.get('RUT', '')).replace('.', '').strip()
-            affected_ruts.add(rut_excel)
-            category = usuarios_por_rut.get(rut_excel, '')
-            
-            cap = Capacitacion(
-                rut_excel,
-                category,
-                idv.get('NOMBRE_CAPACITACION'),
-                idv.get('ENTIDAD'),
-                idv.get('HORAS'),
-                idv.get('NIVEL_TECNICO'),
-                idv.get('NOTA'),
-                idv.get('AÑO_INICIO', 0),
-                idv.get('AÑO_PRESENTACION', 0),
-                idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
-                idv.get('ES_POSTGRADO')
-            )
-            ingresar_registro_bd('capacitaciones', cap.crear_dict_capacitacion())
+            try:
+                idv = limpiar_nans(idv_l)
+                if not idv: continue
+                
+                rut_excel = str(idv.get('RUT', '')).replace('.', '').strip()
+                affected_ruts.add(rut_excel)
+                category = usuarios_por_rut.get(rut_excel, '')
+                
+                cap = Capacitacion(
+                    rut_excel,
+                    category,
+                    idv.get('NOMBRE_CAPACITACION'),
+                    idv.get('ENTIDAD'),
+                    idv.get('HORAS'),
+                    idv.get('NIVEL_TECNICO'),
+                    idv.get('NOTA'),
+                    idv.get('AÑO_INICIO', 0),
+                    idv.get('AÑO_PRESENTACION', 0),
+                    idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
+                    idv.get('ES_POSTGRADO')
+                )
+                ingresar_registro_bd('capacitaciones', cap.crear_dict_capacitacion())
+            except Exception as e:
+                print(f"❌ Error procesando capacitación (else) (RUT {idv_l.get('RUT')}): {e}")
 
 
     # --- BATCH POST-PROCESSING ---

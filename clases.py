@@ -65,15 +65,31 @@ class Capacitacion:
         self.rut = rut
         self.nombre_capacitacion = nombre_cap
         self.entidad = entidad
-        self.horas = int(horas_cap or 0)
+        self.entidad = entidad
+        try:
+            h_str = str(horas_cap).replace(',', '.')
+            self.horas = int(float(h_str or 0))
+        except:
+            self.horas = 0
+            
         self.nivel_tecnico = nv_tec
         try:
             nota = str(nota).replace(",", ".")  # Reemplazar coma por punto en la nota
             self.nota = float(nota)
         except (ValueError, TypeError):
             self.nota = 0.0
-        self.año_inicio = int(año_inic or 0)
-        self.año_presentacion = int(año_pres or 0)
+            
+        try:
+            val_ini = str(año_inic).replace(',', '.')
+            self.año_inicio = int(float(val_ini or 0))
+        except:
+             self.año_inicio = 0
+             
+        try:
+            val_pres = str(año_pres).replace(',', '.')
+            self.año_presentacion = int(float(val_pres or 0))
+        except:
+            self.año_presentacion = 0
         self.cont_press = cont_press
         self.post = post
         self.tipo_cap = tipo_cap
