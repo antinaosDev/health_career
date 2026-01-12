@@ -790,8 +790,12 @@ def app():
     # 6. EXPORTAR INFORME GLOBAL
     # Requires: pip install -U kaleido
     import os
+    import importlib
     
     if st.button("📄 Exportar Informe Completo (PDF)", type="primary"):
+        import modules.pdf_admin
+        importlib.reload(modules.pdf_admin) # FORCE RELOAD to pick up bytearray fix
+        from modules.pdf_admin import create_global_pdf
         with st.spinner("Generando reporte global... Esto puede tomar unos segundos..."):
             try:
                 # 1. Prepare KPIs

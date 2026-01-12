@@ -482,26 +482,34 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 else:
                     elem[k] = ""
 
+    # Define Expected Headers for robust classification
+    KEYS_USER = {'RUT', 'NOMBRE_FUNC', 'CATEGORIA', 'SEXO', 'FECHA_NAC', 'TITULO', 'GRADO'}
+    KEYS_CONT = {'RUT', 'TIPO_CONTRATO', 'HORAS', 'FECHA_INICIO', 'FECHA_TERMINO', 'CARGO', 'DEPENDENCIA', 'CALIDAD_JURIDICA'}
+    KEYS_CAP = {'RUT', 'NOMBRE_CAPACITACION', 'ENTIDAD', 'HORAS', 'NOTA', 'NIVEL_TECNICO', 'AÑO_INICIO'}
+
     usuario_v = []
     contrato_v = []
     capacitacion_v = []
 
-    encabezados_user = encabezados_lista[0]
-    encabezados_contrato = encabezados_lista[1]
-    encabezados_capacitacion = encabezados_lista[2]
-
     for dic in lista_diccionarios_v:
-        claves = set(dic.keys())
-        match_user = len(claves & set(encabezados_user))
-        match_contrato = len(claves & set(encabezados_contrato))
-        match_capacitacion = len(claves & set(encabezados_capacitacion))
+        claves = set(k.upper() for k in dic.keys()) # Normalize keys for check
+        
+        # Calculate intersection counts
+        match_user = len(claves.intersection(KEYS_USER))
+        match_contrato = len(claves.intersection(KEYS_CONT))
+        match_capacitacion = len(claves.intersection(KEYS_CAP))
 
-        if match_user >= match_contrato and match_user >= match_capacitacion:
-            usuario_v.append(dic)
-        elif match_contrato >= match_user and match_contrato >= match_capacitacion:
-            contrato_v.append(dic)
+        # Classify based on highest match count
+        # Priority: User > Contract > Training (if ties, though ties are unlikely with unique fields)
+        if match_user > 3 and match_user >= match_contrato and match_user >= match_capacitacion:
+             usuario_v.append(dic)
+        elif match_contrato > 3 and match_contrato >= match_user and match_contrato >= match_capacitacion:
+             contrato_v.append(dic)
+        elif match_capacitacion > 3: # Relaxed threshold for Training
+             capacitacion_v.append(dic)
         else:
-            capacitacion_v.append(dic)
+             # Fallback: strict assignment if very few columns
+             pass
 
     def eliminar_duplicados(lista_diccionarios):
         lista_sin_duplicados = list({tuple(sorted(d.items())) for d in lista_diccionarios})
@@ -511,7 +519,7 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
         # Relaxed Filter: Allow rows with more NaNs (e.g. only essential fields present)
         # Previous limit was >=3, which is too strict for sparse Excel rows.
         cantidad_nans = sum(isinstance(v, float) and math.isnan(v) for v in diccionario.values())
-        if cantidad_nans >= 7: 
+        if cantidad_nans >= 8: # Slightly relaxed further
             return None
         return {
             k: None if isinstance(v, float) and math.isnan(v) else v
