@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+# Force reload trigger
 from firebase_bd import leer_registro
 from indices import indices_niveles, sueldos_reajustados_2025
 from datetime import datetime
