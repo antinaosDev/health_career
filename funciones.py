@@ -624,7 +624,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
             es_valido, total_con_nuevo = validar_tope_horas(rut_excel, horas_nuevas, tipo, id_ignorar, contratos)
             
             if not es_valido:
-                return f"❌ Error (RUT {rut_excel}): Supera tope 44 hrs (Planta + Plazo Fijo). Intento: {total_con_nuevo} hrs. Carga detenida."
+                print(f"❌ Error (RUT {rut_excel}): Supera tope 44 hrs (Planta + Plazo Fijo). Intento: {total_con_nuevo} hrs. Registro Omitido.")
+                continue
             # --- VALIDATION END ---
 
             if key in contracts_map:
@@ -669,7 +670,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 es_valido, total_con_nuevo = validar_tope_horas(r, horas_nuevas, tipo, None, contratos)
                 
                 if not es_valido:
-                     return f"❌ Error (RUT {r}): Supera tope 44 hrs. Intento: {total_con_nuevo} hrs. Carga detenida."
+                     print(f"❌ Error (RUT {r}): Supera tope 44 hrs. Intento: {total_con_nuevo} hrs. Registro Omitido.")
+                     continue
 
                 id_new = ingresar_registro_bd('contrato', limpio)
                 # Update local cache
