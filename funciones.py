@@ -66,13 +66,38 @@ def dias_restantes_contrato(contrato):
 def calculo_años(fecha_inicio, fecha_termino=None):
     from datetime import datetime
 
-    if not isinstance(fecha_inicio, str):
+    if not isinstance(fecha_inicio, str) or not fecha_inicio.strip():
         return 0
 
     try:
-        inicio = datetime.strptime(fecha_inicio.strip(), '%d/%m/%Y')
+        f_ini = fecha_inicio.strip()
+        # Try multiple formats
+        for fmt in ('%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'):
+             try:
+                 inicio = datetime.strptime(f_ini, fmt)
+                 break
+             except ValueError:
+                 continue
+        else:
+             # Raise error if loop completes without break
+             raise ValueError(f"Formato desconocido: {f_ini}")
+
         fin_str = fecha_termino.strip() if fecha_termino and isinstance(fecha_termino, str) else None
-        fin = datetime.strptime(fin_str, '%d/%m/%Y') if fin_str else datetime.now()
+        
+        fin = datetime.now()
+        if fin_str:
+            for fmt in ('%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'):
+                 try:
+                     fin = datetime.strptime(fin_str, fmt)
+                     break
+                 except ValueError:
+                     continue
+            # If fin_str exists but fails all formats, it might default to now or raise. 
+            # Original code defaulted to now() if fin_str was falsy, but not if it was malformed.
+            # We'll stick to 'now' if malformed or just let the exception flow? 
+            # The original 'fin' logic was: fin = datetime.strptime(...) if fin_str else datetime.now()
+            # If fin_str was provided but invalid, it crashed. Now we try to handle it.
+        
         # Logic Restore: (fin - inicio).days // 365
         return (fin - inicio).days // 365
     except Exception as e:

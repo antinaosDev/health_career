@@ -111,7 +111,7 @@ def app():
                     
                     st.dataframe(
                         df[valid_cols],
-                        use_container_width=True,
+                        width='stretch',
                         column_config={
                             "RUT": "RUT",
                             "FUNCIONARIO": st.column_config.TextColumn("Funcionario", width="medium"),

@@ -124,28 +124,28 @@ def main():
             # 1. CAREER MODULES (Inicio, Analisis, Simulador, Contratos, Capacitaciones, Gestion Global)
             # Visible if: Admin OR has_career
             if is_admin or has_career:
-                if st.sidebar.button("🏠 Inicio", use_container_width=True, type="secondary" if st.session_state["page"] != "home" else "primary"):
+                if st.sidebar.button("🏠 Inicio", width='stretch', type="secondary" if st.session_state["page"] != "home" else "primary"):
                     st.session_state["page"] = "home"
                     st.rerun()
 
                 if is_admin:
-                     if st.sidebar.button("📊 Gestión Global", use_container_width=True, type="secondary" if st.session_state["page"] != "gestion_global" else "primary"):
+                     if st.sidebar.button("📊 Gestión Global", width='stretch', type="secondary" if st.session_state["page"] != "gestion_global" else "primary"):
                         st.session_state["page"] = "gestion_global"
                         st.rerun()
                 
-                if st.sidebar.button("📈 Análisis Est.", use_container_width=True, type="secondary" if st.session_state["page"] != "analisis" else "primary"):
+                if st.sidebar.button("📈 Análisis Est.", width='stretch', type="secondary" if st.session_state["page"] != "analisis" else "primary"):
                     st.session_state["page"] = "analisis"
                     st.rerun()
 
-                if st.sidebar.button("🔮 Simulador", use_container_width=True, type="secondary" if st.session_state["page"] != "simulador" else "primary"):
+                if st.sidebar.button("🔮 Simulador", width='stretch', type="secondary" if st.session_state["page"] != "simulador" else "primary"):
                     st.session_state["page"] = "simulador"
                     st.rerun()
 
-                if st.sidebar.button("📄 Contratos", use_container_width=True, type="secondary" if st.session_state["page"] != "contratos" else "primary"):
+                if st.sidebar.button("📄 Contratos", width='stretch', type="secondary" if st.session_state["page"] != "contratos" else "primary"):
                     st.session_state["page"] = "contratos"
                     st.rerun()
 
-                if st.sidebar.button("🎓 Capacitaciones", use_container_width=True, type="secondary" if st.session_state["page"] != "capacitaciones" else "primary"):
+                if st.sidebar.button("🎓 Capacitaciones", width='stretch', type="secondary" if st.session_state["page"] != "capacitaciones" else "primary"):
                     st.session_state["page"] = "capacitaciones"
                     st.rerun()
 
@@ -160,12 +160,12 @@ def main():
             # 2. HONORARIOS MODULE
             # Visible if: Admin OR has_honorario
             if is_admin or has_honorario:
-                if st.sidebar.button("🛡️ Honorarios", use_container_width=True, type="secondary" if st.session_state["page"] != "honorarios" else "primary"):
+                if st.sidebar.button("🛡️ Honorarios", width='stretch', type="secondary" if st.session_state["page"] != "honorarios" else "primary"):
                     st.session_state["page"] = "honorarios"
                     st.rerun()
             
             st.divider()
-            if st.button("Cerrar Sesión", use_container_width=True, type="secondary"):
+            if st.button("Cerrar Sesión", width='stretch', type="secondary"):
                 st.session_state["usuario_rut"] = None
                 st.session_state["usuario_rol"] = None
                 st.session_state["page"] = "home" # Reset page on logout

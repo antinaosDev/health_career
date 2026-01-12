@@ -720,7 +720,7 @@ def app():
         with st.expander("Ver Nómina Inmediata", expanded=False):
             st.dataframe(
                 pd.DataFrame(immediate_upgrades), 
-                use_container_width=True, 
+                width='stretch', 
                 hide_index=True,
                 column_config={
                     "Funcionario": st.column_config.TextColumn("Funcionario", width="medium"),
@@ -746,7 +746,7 @@ def app():
         with st.expander("Ver Nómina Proyección", expanded=True):
             st.dataframe(
                 pd.DataFrame(upcoming_upgrades).sort_values('Días Restantes'), 
-                use_container_width=True, 
+                width='stretch', 
                 hide_index=True,
                 column_config={
                     "Funcionario": st.column_config.TextColumn("Funcionario", width="medium"),
@@ -772,7 +772,7 @@ def app():
                 "SUELDO_BASE": st.column_config.NumberColumn("Sueldo Base", format="$%d"),
                 "BIENIOS": st.column_config.NumberColumn("Bienios"),
             },
-            use_container_width=True,
+            width='stretch',
             hide_index=True
         )
 

@@ -266,7 +266,7 @@ def app():
         st.plotly_chart(fig, use_container_width=True)
         
         # Table
-        st.dataframe(df_sim.style.format({"Puntaje Total": "{:,.2f}", "Saldo Disp.": "{:,.2f}"}), use_container_width=True)
+        st.dataframe(df_sim.style.format({"Puntaje Total": "{:,.2f}", "Saldo Disp.": "{:,.2f}"}), width='stretch')
 
     # --- 3. Gap Analysis / Recommendations ---
     st.divider()
