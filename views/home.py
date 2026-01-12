@@ -284,7 +284,7 @@ def app():
             df_bd = pd.DataFrame(breakdown)
             df_bd = df_bd[['AÑO', 'PUNTOS_REALES', 'LIMITE', 'DIFERENCIA', 'SALDO_USADO', 'SALDO_GENERADO', 'SALDO_ACUMULADO']]
             df_bd.columns = ['Año', 'Pts. Cursos', 'Tope Anual', 'Déficit/Exceso', 'Saldo Usado', 'Saldo Generado', 'Saldo Final']
-            st.dataframe(df_bd, width='stretch', hide_index=True)
+            st.dataframe(df_bd, use_container_width=True, hide_index=True)
         else:
             st.info("No se registran movimientos anuales de capacitación (ingresos o défitics) para el desglose.")
 
@@ -589,7 +589,7 @@ def app():
         st.dataframe(
             df[cols],
             hide_index=True,
-            width='stretch',
+            use_container_width=True,
             column_config={
                 "NOMBRE_CAPACITACION": st.column_config.TextColumn("Capacitación", width="large"),
                 "ENTIDAD": st.column_config.TextColumn("Entidad"),

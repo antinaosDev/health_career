@@ -74,7 +74,7 @@ def app():
                 cols = [c for c in cols if c in df.columns]
                 st.dataframe(
                     df[cols], 
-                    width='stretch', 
+                    use_container_width=True, 
                     hide_index=True,
                     column_config={
                         "RUT": st.column_config.TextColumn("RUT"),

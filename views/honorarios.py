@@ -141,7 +141,7 @@ def app():
             "Sueldo Est.": monto_str
         })
     
-    st.dataframe(pd.DataFrame(df_data), width='stretch', hide_index=True)
+    st.dataframe(pd.DataFrame(df_data), use_container_width=True, hide_index=True)
     
     st.markdown(f"### 💰 Total Estimado Mensual (Base + APS): **{format_clp(total_estimado_global)}**")
     st.caption("*Cálculo: Sueldo Base Nivel 15 (proporcional a horas) + Asignación APS (100% Base)*")
