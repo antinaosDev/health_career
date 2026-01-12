@@ -482,33 +482,47 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 else:
                     elem[k] = ""
 
-    # Define Expected Headers for robust classification
-    KEYS_USER = {'RUT', 'NOMBRE_FUNC', 'CATEGORIA', 'SEXO', 'FECHA_NAC', 'TITULO', 'GRADO'}
-    KEYS_CONT = {'RUT', 'TIPO_CONTRATO', 'HORAS', 'FECHA_INICIO', 'FECHA_TERMINO', 'CARGO', 'DEPENDENCIA', 'CALIDAD_JURIDICA'}
-    KEYS_CAP = {'RUT', 'NOMBRE_CAPACITACION', 'ENTIDAD', 'HORAS', 'NOTA', 'NIVEL_TECNICO', 'AÑO_INICIO'}
+    # Dynamic Header Detection Logic
+    idx_user = 0
+    idx_cont = 1
+    idx_cap = 2
+    
+    # Try to identify sheets by content
+    for i, headers_list in enumerate(encabezados_lista):
+        h_set = set(headers_list)
+        if 'TIPO_CONTRATO' in h_set or 'CALIDAD_JURIDICA' in h_set:
+            idx_cont = i
+        elif 'NOMBRE_CAPACITACION' in h_set or 'NOMBRE CURSO' in h_set or 'ENTIDAD' in h_set:
+            idx_cap = i
+        elif 'CATEGORIA' in h_set or 'SEXO' in h_set or 'TITULO' in h_set:
+            idx_user = i
+            
+    # Safeguard against out-of-bounds if file has fewer sheets
+    num_sheets = len(encabezados_lista)
+    encabezados_user = encabezados_lista[idx_user] if idx_user < num_sheets else []
+    encabezados_contrato = encabezados_lista[idx_cont] if idx_cont < num_sheets else []
+    encabezados_capacitacion = encabezados_lista[idx_cap] if idx_cap < num_sheets else []
 
     usuario_v = []
     contrato_v = []
     capacitacion_v = []
 
     for dic in lista_diccionarios_v:
-        claves = set(k.upper() for k in dic.keys()) # Normalize keys for check
+        claves = set(dic.keys())
         
-        # Calculate intersection counts
-        match_user = len(claves.intersection(KEYS_USER))
-        match_contrato = len(claves.intersection(KEYS_CONT))
-        match_capacitacion = len(claves.intersection(KEYS_CAP))
+        # Calculate intersection with detected headers
+        match_user = len(claves & set(encabezados_user)) if encabezados_user else 0
+        match_contrato = len(claves & set(encabezados_contrato)) if encabezados_contrato else 0
+        match_capacitacion = len(claves & set(encabezados_capacitacion)) if encabezados_capacitacion else 0
 
-        # Classify based on highest match count
-        # Priority: User > Contract > Training (if ties, though ties are unlikely with unique fields)
-        if match_user > 3 and match_user >= match_contrato and match_user >= match_capacitacion:
+        # Relaxed classification logic
+        if match_user > 0 and match_user >= match_contrato and match_user >= match_capacitacion:
              usuario_v.append(dic)
-        elif match_contrato > 3 and match_contrato >= match_user and match_contrato >= match_capacitacion:
+        elif match_contrato > 0 and match_contrato >= match_user and match_contrato >= match_capacitacion:
              contrato_v.append(dic)
-        elif match_capacitacion > 3: # Relaxed threshold for Training
+        elif match_capacitacion > 0:
              capacitacion_v.append(dic)
         else:
-             # Fallback: strict assignment if very few columns
              pass
 
     def eliminar_duplicados(lista_diccionarios):
