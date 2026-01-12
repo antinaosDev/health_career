@@ -502,6 +502,9 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
     encabezados_user = encabezados_lista[idx_user] if idx_user < num_sheets else []
     encabezados_contrato = encabezados_lista[idx_cont] if idx_cont < num_sheets else []
     encabezados_capacitacion = encabezados_lista[idx_cap] if idx_cap < num_sheets else []
+    
+    print(f"🕵️ Detectado: Users=Sheet[{idx_user}], Contracts=Sheet[{idx_cont}], Caps=Sheet[{idx_cap}]")
+    print(f"📝 Headers Caps: {encabezados_capacitacion}")
 
     usuario_v = []
     contrato_v = []
@@ -524,6 +527,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
              capacitacion_v.append(dic)
         else:
              pass
+    
+    print(f"🔢 Clasificación: Users={len(usuario_v)}, Contratos={len(contrato_v)}, Caps={len(capacitacion_v)}")
 
     def eliminar_duplicados(lista_diccionarios):
         lista_sin_duplicados = list({tuple(sorted(d.items())) for d in lista_diccionarios})
