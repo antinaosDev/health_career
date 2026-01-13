@@ -838,62 +838,115 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
     return f"Carga masiva procesada correctamente. Insertados: {inserted_count}, Omitidos (Duplicados): {skipped_count}, Total Leídos: {len(capacitacion_v)}"
 
 
+def calculate_real_seniority(contracts_list):
+    from datetime import datetime
+    
+    planta_contract = None
+    other_contracts = []
+    
+    # Identify Planta vs Others (Normalization assumed via clean_text usage in map, but safe to re-clean here if needed)
+    for c in contracts_list:
+        ctype = str(c.get('TIPO_CONTRATO', '')).strip().upper()
+        if 'PLANTA' in ctype:
+            planta_contract = c
+        else:
+            other_contracts.append(c)
+            
+    total_days = 0
+    now = datetime.now()
+    
+    # Logic: Planta (Continuous) + Others (Additive)
+    if planta_contract:
+        start_str = str(planta_contract.get('FECHA_INICIO', '')).strip()
+        if start_str:
+            try:
+                start_date = datetime.strptime(start_str, '%d/%m/%Y')
+                total_days += (now - start_date).days
+            except: pass
+            
+        # Add Others
+        for c in other_contracts:
+            s_str = str(c.get('FECHA_INICIO', '')).strip()
+            e_str = str(c.get('FECHA_TERMINO', '')).strip()
+            if s_str and e_str:
+                try:
+                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
+                    e_date = datetime.strptime(e_str, '%d/%m/%Y')
+                    total_days += (e_date - s_date).days
+                except: pass
+    else:
+        # No Planta -> Sum of all intervals
+        all_cons = contracts_list
+        for c in all_cons:
+            s_str = str(c.get('FECHA_INICIO', '')).strip()
+            e_str = str(c.get('FECHA_TERMINO', '')).strip()
+            if s_str:
+                try:
+                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
+                    if e_str:
+                         e_date = datetime.strptime(e_str, '%d/%m/%Y')
+                         total_days += (e_date - s_date).days
+                    else:
+                         # Active non-planta (e.g. current Contrata)? Treat as continuous to now?
+                         # Usually Honorarios/Plazo Fijo have Fixed Term key. 
+                         # Assuming 'Contrata' behaves like Planta? 
+                         # User only mentioned 'Plazo Fijo' and 'Honorarios'. 
+                         # Let's assume start->now if no end date.
+                         total_days += (now - s_date).days
+                except: pass
+
+    return max(0, total_days // 365)
+
+
 def actualizacion_horaria(rol, reg, conts, rut_red=''):
     """
     Updates Age (Usuarios) and Antiquity (Contratos).
-    MODIFIED: Updates the dictionaries in-place (reg, conts) to ensure subsequent calls see fresh data.
+    Calculates Seniority per PERSON (Summing contracts), not per contract.
     """
-    if rol in ['PROGRAMADOR', 'ADMIN']:
-        if reg:
-            for idx, v in reg.items():
-                inicio = v.get('FECHA_NAC', '')
-                edad = calculo_años(inicio)
-                if v.get('EDAD') != edad:
-                    actualizar_registro('usuarios', {'EDAD': edad}, idx)
-                    v['EDAD'] = edad # In-memory update
+    # 1. Update Age (Users) - Keeps original logic
+    if reg:
+        # Filter if rut_red provided
+        target_ids = []
+        if rut_red:
+             target_ids = [k for k,v in reg.items() if str(v.get('RUT','')).replace('.', '').strip() == rut_red]
+        else:
+             target_ids = reg.keys()
 
-        if conts:
-            for idc, vc in conts.items():
-                in_c = vc.get('FECHA_INICIO', 0)
-                ter_c = vc.get('FECHA_TERMINO', 0)
-                ant = 0
-                if vc.get('TIPO_CONTRATO') == 'Planta':
-                    ant = calculo_años(in_c)
-                else:
-                    ant = calculo_años(in_c, ter_c)
-                
-                # Check Diff
-                if vc.get('ANTIGUEDAD') != ant:
-                    actualizar_registro('contrato', {'ANTIGUEDAD': ant}, idc)
-                    vc['ANTIGUEDAD'] = ant # In-memory update
+        for idx in target_ids:
+             v = reg[idx]
+             inicio = v.get('FECHA_NAC', '')
+             edad = calculo_años(inicio)
+             if v.get('EDAD') != edad:
+                 actualizar_registro('usuarios', {'EDAD': edad}, idx)
+                 v['EDAD'] = edad
 
-    else:
-        # Single User Mode
-        if reg:
-            for idx, v in reg.items():
-                rut_verif = str(v.get('RUT','')).replace('.', '').strip()
-                if rut_verif == rut_red:
-                    inicio = v.get('FECHA_NAC', '')
-                    edad = calculo_años(inicio)
-                    if v.get('EDAD') != edad:
-                        actualizar_registro('usuarios', {'EDAD': edad}, idx)
-                        v['EDAD'] = edad # In-memory update
-
-        if conts:
-            for idc, vc in conts.items():
-                rut_verif = str(vc.get('RUT','')).replace('.', '').strip()
-                if rut_verif == rut_red:
-                    in_c = vc.get('FECHA_INICIO', 0)
-                    ter_c = vc.get('FECHA_TERMINO', 0)
-                    ant = 0
-                    if vc.get('TIPO_CONTRATO') == 'Planta':
-                        ant = calculo_años(in_c)
-                    else:
-                        ant = calculo_años(in_c, ter_c)
-                    
-                    if vc.get('ANTIGUEDAD') != ant:
-                        actualizar_registro('contrato', {'ANTIGUEDAD': ant}, idc)
-                        vc['ANTIGUEDAD'] = ant # In-memory update
+    # 2. Update Seniority (Contracts) - New Logic
+    if conts:
+        # Group contracts by RUT
+        rut_to_conts = {}
+        for idc, vc in conts.items():
+            r = str(vc.get('RUT', '')).replace('.', '').strip()
+            if not r: continue
+            if r not in rut_to_conts: rut_to_conts[r] = []
+            rut_to_conts[r].append((idc, vc))
+        
+        # Determine targets
+        target_ruts = [rut_red] if rut_red else rut_to_conts.keys()
+        
+        for r in target_ruts:
+            if r not in rut_to_conts: continue
+            
+            user_contracts = [x[1] for x in rut_to_conts[r]]
+            ids = [x[0] for x in rut_to_conts[r]]
+            
+            # Calculate Global Seniority for this person
+            ant_real = calculate_real_seniority(user_contracts)
+            
+            # Apply to ALL contracts for this person
+            for idc, vc in zip(ids, user_contracts):
+                 if vc.get('ANTIGUEDAD') != ant_real:
+                     actualizar_registro('contrato', {'ANTIGUEDAD': ant_real}, idc)
+                     vc['ANTIGUEDAD'] = ant_real
 
 
 
