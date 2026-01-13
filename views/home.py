@@ -594,7 +594,7 @@ def app():
             if c in df.columns:
                 df[c] = df[c].astype(str)
 
-        cols = ['NOMBRE_CAPACITACION', 'ENTIDAD', 'AÑO_PRESENTACION', 'CONTEXTO_PRESS', 'HORAS', 'NOTA', 'PJE_POND', 'NIVEL_TECNICO']
+        cols = ['NOMBRE_CAPACITACION', 'ENTIDAD', 'AÑO_PRESENTACION', 'CONTEXTO_PRESS', 'HORAS', 'NOTA', 'PJE_POND', 'NIVEL_TECNICO', 'VALIDO_CARRERA']
         cols = [c for c in cols if c in df.columns]
         
         st.dataframe(
@@ -610,6 +610,7 @@ def app():
                 "AÑO_PRESENTACION": st.column_config.TextColumn("Año"),
                 "CONTEXTO_PRESS": st.column_config.TextColumn("Contexto"),
                 "NIVEL_TECNICO": st.column_config.TextColumn("Nivel"),
+                "VALIDO_CARRERA": st.column_config.TextColumn("¿Válido?"),
             },
         )
 
