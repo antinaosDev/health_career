@@ -970,7 +970,7 @@ def validar_tope_horas(rut, nuevas_horas, tipo_contrato, id_contrato_ignorar=Non
         r_c = str(v.get('RUT', '')).replace('.', '').strip().upper()
         if r_c == rut_clean:
             t_c = v.get('TIPO_CONTRATO', '')
-            if t_c in ['Planta', 'Plazo Fijo']:
+            if str(t_c).upper() in ['PLANTA', 'PLAZO FIJO']:
                 try:
                     h = int(v.get('HORAS', 0))
                     total_horas += h
