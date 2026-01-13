@@ -61,7 +61,10 @@ def obtener_meta_proximo_nivel(score_actual, categoria):
             
     return current_level, None, 0
 
+from modules.ui import render_header
+
 def app():
+    render_header()
     st.markdown("## 🔮 Simulador de Carrera Profesional")
     st.markdown("Proyecta tu evolución funcionaria considerando **Plan Anual** y **Bienios** (Asignación de Antigüedad).")
     

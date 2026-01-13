@@ -9,8 +9,11 @@ from funciones import carga_masiva, puntaje_nv
 from datetime import datetime
 import time
 
+from modules.ui import render_header
+
 def app():
-    st.markdown("## 🎓 Capacitaciones")
+    render_header()
+    st.markdown("## 📚 Gestión de Capacitaciones")
     
     rut_actual = st.session_state["usuario_rut"]
     rol_actual = st.session_state["usuario_rol"]

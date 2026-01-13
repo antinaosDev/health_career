@@ -14,8 +14,11 @@ def format_clp(value):
     except:
         return "$0"
 
+from modules.ui import render_header
+
 def app():
-    st.markdown("## 🛡️ Gestión de Honorarios")
+    render_header()
+    st.markdown("## 🧾 Gestión de Honorarios")
     
     rut_actual = st.session_state["usuario_rut"]
     rol_actual = st.session_state["usuario_rol"]

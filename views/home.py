@@ -197,7 +197,10 @@ def plot_horas_bienio(caps_list):
     fig.update_layout(template="plotly_white", margin=dict(t=40, b=0, l=0, r=0))
     return fig
 
+from modules.ui import render_header
+
 def app():
+    render_header()
     st.markdown("## 📊 Dashboard Integral del Funcionario")
     
     # --- Guía de Orientación ---

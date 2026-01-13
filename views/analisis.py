@@ -7,7 +7,10 @@ from firebase_bd import leer_registro
 from datetime import datetime
 import numpy as np
 
+from modules.ui import render_header
+
 def app():
+    render_header()
     st.markdown("## 📈 Análisis Estadístico y Temporal")
     
     rut_actual = st.session_state["usuario_rut"]
