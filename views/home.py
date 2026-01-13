@@ -377,7 +377,11 @@ def app():
                     
 
 
+            from funciones import calculate_detailed_seniority
+            y_det, m_det, d_det = calculate_detailed_seniority(data['conts_raw'])
+            
             st.markdown(f"**Categoría:** {ud.get('CATEGORIA')} | **Bienios:** {ud.get('BIENIOS')}")
+            st.markdown(f"**Antigüedad Total:** {y_det} años, {m_det} meses")
             st.markdown(f"📅 **Próximo Bienio:** {fecha_prox_bienio} <span style='color: #666; font-size: 0.85em;'>{dias_para_bienio}</span>", unsafe_allow_html=True)
             
             st.markdown(f"**Edad:** {ud.get('EDAD')} años")

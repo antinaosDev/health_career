@@ -897,6 +897,65 @@ def calculate_real_seniority(contracts_list):
     return max(0, total_days // 365)
 
 
+def calculate_detailed_seniority(contracts_list):
+    """
+    Returns (years, months, days) tuple for detailed display.
+    Reuses the logic of calculate_real_seniority but without flattening to int years early.
+    """
+    from datetime import datetime
+    
+    planta_contract = None
+    other_contracts = []
+    
+    for c in contracts_list:
+        ctype = str(c.get('TIPO_CONTRATO', '')).strip().upper()
+        if 'PLANTA' in ctype:
+            planta_contract = c
+        else:
+            other_contracts.append(c)
+            
+    total_days = 0
+    now = datetime.now()
+    
+    if planta_contract:
+        start_str = str(planta_contract.get('FECHA_INICIO', '')).strip()
+        if start_str:
+            try:
+                start_date = datetime.strptime(start_str, '%d/%m/%Y')
+                total_days += (now - start_date).days
+            except: pass
+            
+        for c in other_contracts:
+            s_str = str(c.get('FECHA_INICIO', '')).strip()
+            e_str = str(c.get('FECHA_TERMINO', '')).strip()
+            if s_str and e_str:
+                try:
+                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
+                    e_date = datetime.strptime(e_str, '%d/%m/%Y')
+                    total_days += (e_date - s_date).days
+                except: pass
+    else:
+        for c in contracts_list:
+            s_str = str(c.get('FECHA_INICIO', '')).strip()
+            e_str = str(c.get('FECHA_TERMINO', '')).strip()
+            if s_str:
+                try:
+                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
+                    if e_str:
+                         e_date = datetime.strptime(e_str, '%d/%m/%Y')
+                         total_days += (e_date - s_date).days
+                    else:
+                         total_days += (now - s_date).days
+                except: pass
+
+    # Approximate conversion
+    years = total_days // 365
+    remaining_days = total_days % 365
+    months = remaining_days // 30
+    
+    return years, months, remaining_days
+
+
 def actualizacion_horaria(rol, reg, conts, rut_red=''):
     """
     Updates Age (Usuarios) and Antiquity (Contratos).
