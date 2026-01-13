@@ -46,7 +46,7 @@ def app():
                      df_chart['NIVEL_TECNICO'] = df_chart['NIVEL_TECNICO'].fillna('Sin Especificar').replace('', 'Sin Especificar')
                      # Create pie chart
                      fig_nivel = px.pie(df_chart, names='NIVEL_TECNICO', hole=0.4, title="", height=300)
-                     st.plotly_chart(fig_nivel, use_container_width=True)
+                     st.plotly_chart(fig_nivel, width="stretch")
                  else:
                      st.info("Columna NIVEL_TECNICO no encontrada.")
         with c_chart2:
@@ -60,7 +60,7 @@ def app():
                      if not df_y.empty:
                          fig_bar = px.bar(df_y, x='AÑO_INICIO', y='HORAS', title="", height=300, color_discrete_sequence=['#006DB6'])
                          fig_bar.update_layout(xaxis_type='category') # Treat years as categories
-                         st.plotly_chart(fig_bar, use_container_width=True)
+                         st.plotly_chart(fig_bar, width="stretch")
                      else:
                          st.caption("Sin datos históricos válidos.")
     else:

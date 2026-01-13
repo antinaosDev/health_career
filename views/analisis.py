@@ -67,7 +67,7 @@ def app():
                 print(f"Error calculating trend: {e}")
                 
         fig.update_layout(template="plotly_white", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         
     with col_stats:
         with st.container(border=True):
@@ -103,6 +103,6 @@ def app():
     
     if 'NIVEL_TECNICO' in df.columns and 'HORAS' in df.columns:
         fig2 = px.sunburst(df, path=['NIVEL_TECNICO', 'ENTIDAD'], values='HORAS', title="Distribución de Horas por Nivel Técnico")
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
     else:
         st.info("Falta información de Nivel Técnico para el gráfico de distribución.")

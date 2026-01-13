@@ -263,7 +263,7 @@ def app():
         fig = px.line(df_sim, x="Año", y="Puntaje Total", markers=True, 
                       title="Trayectoria Proyectada (Incluye Bienios)", text="Nivel Estimado")
         fig.update_traces(textposition="bottom right")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         
         # Table
         st.dataframe(df_sim.style.format({"Puntaje Total": "{:,.2f}", "Saldo Disp.": "{:,.2f}"}), use_container_width=True)

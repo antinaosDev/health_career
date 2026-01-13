@@ -544,7 +544,7 @@ def app():
 
             with cc2:
                 fig_cont = plot_contratos_tipo(data['conts_raw'])
-                if fig_cont: st.plotly_chart(fig_cont, use_container_width=True)
+                if fig_cont: st.plotly_chart(fig_cont, width="stretch")
                 else: st.info("Sin contratos registrados")
 
     # --- Training Deep Dive ---
@@ -555,21 +555,21 @@ def app():
         with st.container(border=True):
             st.markdown("**Por Nivel Técnico**")
             fig_nv = plot_horas_nivel(data['caps_raw'])
-            if fig_nv: st.plotly_chart(fig_nv, use_container_width=True)
+            if fig_nv: st.plotly_chart(fig_nv, width="stretch")
             else: st.caption("Sin datos")
             
     with col_t2:
         with st.container(border=True):
             st.markdown("**Por Bienios**")
             fig_bi = plot_horas_bienio(data['caps_raw'])
-            if fig_bi: st.plotly_chart(fig_bi, use_container_width=True)
+            if fig_bi: st.plotly_chart(fig_bi, width="stretch")
             else: st.caption("Sin datos")
 
     with col_t3:
         with st.container(border=True):
             st.markdown("**Por Año**")
             fig_yr = plot_horas_por_anio(data['caps_raw'])
-            if fig_yr: st.plotly_chart(fig_yr, use_container_width=True)
+            if fig_yr: st.plotly_chart(fig_yr, width="stretch")
             else: st.caption("Sin datos")
 
     # --- Detailed Table ---

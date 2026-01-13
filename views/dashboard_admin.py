@@ -389,7 +389,7 @@ def app():
                 cat_counts = df_users['CATEGORIA'].value_counts().reset_index()
                 cat_counts.columns = ['Categoría', 'Cantidad']
                 fig_cat = px.bar(cat_counts, x='Categoría', y='Cantidad', text='Cantidad', color='Categoría', color_discrete_sequence=px.colors.qualitative.Prism)
-                st.plotly_chart(fig_cat, use_container_width=True)
+                st.plotly_chart(fig_cat, width="stretch")
 
     with c2:
         with st.container(border=True):
@@ -398,7 +398,7 @@ def app():
                 tipo_counts = df_conts['TIPO_CONTRATO'].value_counts().reset_index()
                 tipo_counts.columns = ['Tipo', 'Cantidad']
                 fig_tipo = px.pie(tipo_counts, names='Tipo', values='Cantidad',  hole=0.4, color_discrete_sequence=px.colors.qualitative.Safe)
-                st.plotly_chart(fig_tipo, use_container_width=True)
+                st.plotly_chart(fig_tipo, width="stretch")
 
     with c3:
         with st.container(border=True):
@@ -423,7 +423,7 @@ def app():
                 sex_counts = df_users[found_col].value_counts().reset_index()
                 sex_counts.columns = ['Género', 'Cantidad']
                 fig_sex = px.pie(sex_counts, names='Género', values='Cantidad', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
-                st.plotly_chart(fig_sex, use_container_width=True)
+                st.plotly_chart(fig_sex, width="stretch")
             else:
                 st.info("No hay datos de género disponibles.")
                 with st.expander("Ver Columnas Detectadas"):
@@ -458,7 +458,7 @@ def app():
                 color_continuous_scale='Reds'
             )
             fig_cc.update_layout(showlegend=False)
-            st.plotly_chart(fig_cc, use_container_width=True)
+            st.plotly_chart(fig_cc, width="stretch")
             
     with fc2:
          with st.container(border=True):
@@ -474,7 +474,7 @@ def app():
                 color_continuous_scale='Greens'
             )
             fig_cp.update_layout(showlegend=False)
-            st.plotly_chart(fig_cp, use_container_width=True)
+            st.plotly_chart(fig_cp, width="stretch")
 
     # 4.2.1 UNIT COST ANALYSIS (NEW)
     # "Impacto Unitario": Average Cost per Profession AND Category
@@ -508,7 +508,7 @@ def app():
                 color_continuous_scale='OrRd'
             )
             fig_avg_p.update_layout(showlegend=False)
-            st.plotly_chart(fig_avg_p, use_container_width=True)
+            st.plotly_chart(fig_avg_p, width="stretch")
             
     with uc2:
          with st.container(border=True):
@@ -524,7 +524,7 @@ def app():
                 color_continuous_scale='OrRd'
              )
              fig_avg_c.update_layout(showlegend=False)
-             st.plotly_chart(fig_avg_c, use_container_width=True)
+             st.plotly_chart(fig_avg_c, width="stretch")
 
     # 4.2.2 DEPENDENCY ANALYSIS (NEW)
     st.markdown("### 🏢 Análisis por Dependencia")
@@ -561,7 +561,7 @@ def app():
                 color_continuous_scale='Blues'
              )
              fig_dep.update_layout(showlegend=False)
-             st.plotly_chart(fig_dep, use_container_width=True)
+             st.plotly_chart(fig_dep, width="stretch")
     else:
         st.info("No se encontró información de Dependencia/Unidad.")
 
@@ -573,7 +573,7 @@ def app():
             lvl_counts.columns = ['Nivel', 'Funcionarios']
             lvl_counts = lvl_counts.sort_values('Nivel')
             fig_lvl = px.bar(lvl_counts, x='Nivel', y='Funcionarios', text='Funcionarios', color_discrete_sequence=['#006DB6'])
-            st.plotly_chart(fig_lvl, use_container_width=True)
+            st.plotly_chart(fig_lvl, width="stretch")
 
     # 4.5 ANALISIS PREDICTIVO AVANZADO
     st.markdown("### 🚀 Análisis Predictivo de Ascensos")

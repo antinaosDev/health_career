@@ -954,7 +954,7 @@ def validar_tope_horas(rut, nuevas_horas, tipo_contrato, id_contrato_ignorar=Non
     Valida que la suma de horas Planta + Plazo Fijo no supere 44.
     Retorna (True, total) si es válido, (False, total) si excede.
     """
-    if tipo_contrato == "Honorario":
+    if "HONORARIO" in str(tipo_contrato).upper():
         return True, 0
 
     if data_contratos is None:

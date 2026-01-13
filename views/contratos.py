@@ -45,13 +45,13 @@ def app():
                 st.markdown("**Tipo de Contrato**")
                 if 'TIPO_CONTRATO' in df.columns:
                     fig_tipo = px.pie(df, names='TIPO_CONTRATO', hole=0.5, height=250)
-                    st.plotly_chart(fig_tipo, use_container_width=True)
+                    st.plotly_chart(fig_tipo, width="stretch")
         with c_chart2:
              with st.container(border=True):
                  st.markdown("**Cargos**")
                  if 'CARGO' in df.columns:
                      fig_cargo = px.bar(df['CARGO'].value_counts().reset_index(), x='CARGO', y='count', height=250)
-                     st.plotly_chart(fig_cargo, use_container_width=True)
+                     st.plotly_chart(fig_cargo, width="stretch")
 
     else:
         st.info("No hay datos para estadisticas.")
