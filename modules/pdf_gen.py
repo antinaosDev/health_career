@@ -208,6 +208,37 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
          
          pdf.ln(2)
 
+    # --- DETALLE INGRESO A PLANTA (NEW) ---
+    # Filter for 'Ingreso a Planta' records to show detail
+    planta_caps = [c for c in caps_data if str(c.get('CONTEXTO_PRESS') or c.get('CONTEXTO_PRESENTACION')).strip() == 'Ingreso a Planta']
+    
+    if planta_caps:
+        if pdf.get_y() > 230: pdf.add_page()
+        pdf.set_font('Arial', 'B', 9)
+        pdf.cell(0, 6, "Detalle Componente: Ingreso a Planta", 0, 1, 'L')
+        
+        pdf.set_font('Arial', 'B', 8)
+        w_p = [20, 90, 20, 30] # Total 160
+        h_p = ['Año', 'Nombre Capacitación', 'Horas', 'Puntaje']
+        
+        # Center
+        start_x_p = (210 - sum(w_p)) / 2
+        pdf.set_x(start_x_p)
+        
+        for i, h in enumerate(h_p):
+             pdf.cell(w_p[i], 5, pdf.sanitize_text(h), 1, 0, 'C', 1)
+        pdf.ln()
+        
+        pdf.set_font('Arial', '', 8)
+        for pc in planta_caps:
+            pdf.set_x(start_x_p)
+            pdf.cell(w_p[0], 5, str(pc.get('AÑO_PRESENTACION')), 1, 0, 'C')
+            pdf.cell(w_p[1], 5, pdf.sanitize_text(str(pc.get('NOMBRE_CAPACITACION')))[:55], 1, 0, 'L')
+            pdf.cell(w_p[2], 5, str(pc.get('HORAS')), 1, 0, 'C')
+            pdf.cell(w_p[3], 5, f"{pc.get('PJE_POND',0):.1f}", 1, 0, 'C')
+            pdf.ln()
+        pdf.ln(3)
+
     # --- CONTRACTS SECTION ---
     if conts_data:
         if pdf.get_y() > 230: pdf.add_page()
