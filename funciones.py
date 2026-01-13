@@ -161,36 +161,21 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
                     if año: # Valid year
                          dict_puntaje.append((año, pje))
 
-    # 3. Calculate Antiquity (Bienios) - UPDATED LOGIC
-    # Rule: Earliest Start Date of ALL ACTIVE contracts (Planta, PF, Honorario).
-    earliest_start = None
+    # 3. Calculate Antiquity (Bienios) - UPDATED LOGIC (Consolidated with Seniority Helper)
+    user_contracts_list = []
     tiene_contrato_planta = False
-
+    
     if datos_ant:
         for ant in datos_ant.values():
-            r_ant = str(ant.get('RUT', '')).replace('.', '').strip()
-            
-            # Check RUT match (Active check REMOVED per user request)
-            if r_ant == rut_ev: # and es_contrato_activo(ant) <- Removed
-                # Check contract type for Corr Carr flag
+            r_c = str(ant.get('RUT', '')).replace('.', '').strip()
+            if r_c == rut_ev:
+                user_contracts_list.append(ant)
                 tipo = str(ant.get('TIPO_CONTRATO', '')).strip().upper()
-                if tipo == 'PLANTA':
+                if 'PLANTA' in tipo:
                     tiene_contrato_planta = True
-                
-                # Parse Start Date
-                fi_str = ant.get('FECHA_INICIO')
-                if fi_str:
-                    try:
-                        fi_date = datetime.strptime(str(fi_str).strip(), '%d/%m/%Y')
-                        if earliest_start is None or fi_date < earliest_start:
-                            earliest_start = fi_date
-                    except: pass
-    
-    # Calculate Years from Earliest Start
-    antiguedad_years = 0
-    if earliest_start:
-        antiguedad_years = (datetime.now() - earliest_start).days // 365
-
+                    
+    # Use the robust Merge Intervals Helper
+    antiguedad_years = calculate_real_seniority(user_contracts_list)
     bienio = antiguedad_years // 2
     corr_carr = 'SI' if tiene_contrato_planta else 'NO'
 
@@ -838,122 +823,12 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
 
 
 def calculate_real_seniority(contracts_list):
-    from datetime import datetime
-    
-    planta_contract = None
-    other_contracts = []
-    
-    # Identify Planta vs Others (Normalization assumed via clean_text usage in map, but safe to re-clean here if needed)
-    for c in contracts_list:
-        ctype = str(c.get('TIPO_CONTRATO', '')).strip().upper()
-        if 'PLANTA' in ctype:
-            planta_contract = c
-        else:
-            other_contracts.append(c)
-            
-    total_days = 0
-    now = datetime.now()
-    
-    # Logic: Planta (Continuous) + Others (Additive)
-    if planta_contract:
-        start_str = str(planta_contract.get('FECHA_INICIO', '')).strip()
-        if start_str:
-            try:
-                start_date = datetime.strptime(start_str, '%d/%m/%Y')
-                total_days += (now - start_date).days
-            except: pass
-            
-        # Add Others
-        for c in other_contracts:
-            s_str = str(c.get('FECHA_INICIO', '')).strip()
-            e_str = str(c.get('FECHA_TERMINO', '')).strip()
-            if s_str and e_str:
-                try:
-                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
-                    e_date = datetime.strptime(e_str, '%d/%m/%Y')
-                    total_days += (e_date - s_date).days
-                except: pass
-    else:
-        # No Planta -> Sum of all intervals
-        all_cons = contracts_list
-        for c in all_cons:
-            s_str = str(c.get('FECHA_INICIO', '')).strip()
-            e_str = str(c.get('FECHA_TERMINO', '')).strip()
-            if s_str:
-                try:
-                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
-                    if e_str:
-                         e_date = datetime.strptime(e_str, '%d/%m/%Y')
-                         total_days += (e_date - s_date).days
-                    else:
-                         # Active non-planta (e.g. current Contrata)? Treat as continuous to now?
-                         # Usually Honorarios/Plazo Fijo have Fixed Term key. 
-                         # Assuming 'Contrata' behaves like Planta? 
-                         # User only mentioned 'Plazo Fijo' and 'Honorarios'. 
-                         # Let's assume start->now if no end date.
-                         total_days += (now - s_date).days
-                except: pass
-
-    return max(0, total_days // 365)
-
+    y, m, d, total = calculate_effective_seniority_data(contracts_list)
+    return y
 
 def calculate_detailed_seniority(contracts_list):
-    """
-    Returns (years, months, days) tuple for detailed display.
-    Reuses the logic of calculate_real_seniority but without flattening to int years early.
-    """
-    from datetime import datetime
-    
-    planta_contract = None
-    other_contracts = []
-    
-    for c in contracts_list:
-        ctype = str(c.get('TIPO_CONTRATO', '')).strip().upper()
-        if 'PLANTA' in ctype:
-            planta_contract = c
-        else:
-            other_contracts.append(c)
-            
-    total_days = 0
-    now = datetime.now()
-    
-    if planta_contract:
-        start_str = str(planta_contract.get('FECHA_INICIO', '')).strip()
-        if start_str:
-            try:
-                start_date = datetime.strptime(start_str, '%d/%m/%Y')
-                total_days += (now - start_date).days
-            except: pass
-            
-        for c in other_contracts:
-            s_str = str(c.get('FECHA_INICIO', '')).strip()
-            e_str = str(c.get('FECHA_TERMINO', '')).strip()
-            if s_str and e_str:
-                try:
-                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
-                    e_date = datetime.strptime(e_str, '%d/%m/%Y')
-                    total_days += (e_date - s_date).days
-                except: pass
-    else:
-        for c in contracts_list:
-            s_str = str(c.get('FECHA_INICIO', '')).strip()
-            e_str = str(c.get('FECHA_TERMINO', '')).strip()
-            if s_str:
-                try:
-                    s_date = datetime.strptime(s_str, '%d/%m/%Y')
-                    if e_str:
-                         e_date = datetime.strptime(e_str, '%d/%m/%Y')
-                         total_days += (e_date - s_date).days
-                    else:
-                         total_days += (now - s_date).days
-                except: pass
-
-    # Approximate conversion
-    years = total_days // 365
-    remaining_days = total_days % 365
-    months = remaining_days // 30
-    
-    return years, months, remaining_days
+    y, m, d, total = calculate_effective_seniority_data(contracts_list)
+    return y, m, d
 
 
 def actualizacion_horaria(rol, reg, conts, rut_red=''):
