@@ -179,11 +179,11 @@ def app():
                 from funciones import calculate_detailed_seniority, VALID_DEPS
                 
                 # Global
-                y_det, m_det, d_det, _ = calculate_detailed_seniority(user_conts_fresh)
+                y_det, m_det, d_det = calculate_detailed_seniority(user_conts_fresh)
                 
                 # Career (Filtered)
                 filtered_career = [c for c in user_conts_fresh if str(c.get('DEPENDENCIA', '')).strip() in VALID_DEPS]
-                y_sf, m_sf, d_sf, _ = calculate_detailed_seniority(filtered_career)
+                y_sf, m_sf, d_sf = calculate_detailed_seniority(filtered_career)
                 
                 extra_info = {
                     "antiguedad_real": {'y': y_det, 'm': m_det},
