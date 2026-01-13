@@ -413,7 +413,8 @@ def app():
                     "meta_puntos": data.get('dif_puntos', 0),
                     "cap_status_msg": msg_status, # Pass status
                     "cap_used": used_pts,
-                    "cap_global": cap_global
+                    "cap_global": cap_global,
+                    "antiguedad_real": {'y': y_det, 'm': m_det}
                 }
                 
                 # Check Logo

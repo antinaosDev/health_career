@@ -215,34 +215,72 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
         if pdf.get_y() > 230: pdf.add_page()
         pdf.chapter_title("Resumen Contractual")
         pdf.set_font('Arial', 'B', 9)
-        w_c = [40, 60, 30, 30, 30]
-        header_c = ['Tipo Contrato', 'Cargo', 'Inicio', 'Término', 'Horas']
+        # Expanded headers and widths
+        w_c = [40, 50, 25, 25, 20, 30] # Total 190
+        header_c = ['Tipo Contrato', 'Cargo', 'Inicio', 'Término', 'Horas', 'Antigüedad']
         
         for i, h in enumerate(header_c):
             pdf.cell(w_c[i], 7, pdf.sanitize_text(h), 1, 0, 'C', 1)
         pdf.ln()
         
         pdf.set_font('Arial', '', 9)
-        total_hrs_c = 0
+        total_hrs_c = 0.0
+        
         for c in conts_data:
             tipo = pdf.sanitize_text(str(c.get('TIPO_CONTRATO', '')))
             cargo = pdf.sanitize_text(str(c.get('CARGO', ''))[:25])
-            ini = pdf.sanitize_text(str(c.get('FECHA_INICIO', '')))
-            fin = pdf.sanitize_text(str(c.get('FECHA_TERMINO', 'Indefinido')))
-            hrs = pdf.sanitize_text(str(c.get('HORAS', 0)))
-            try: total_hrs_c += int(hrs)
+            ini_str = str(c.get('FECHA_INICIO', ''))
+            fin_str = str(c.get('FECHA_TERMINO', ''))
+            
+            ini = pdf.sanitize_text(ini_str)
+            fin = pdf.sanitize_text(fin_str if fin_str else 'Indefinido')
+            
+            hrs_str = str(c.get('HORAS', 0))
+            hrs_disp = pdf.sanitize_text(hrs_str)
+            try: total_hrs_c += float(hrs_str)
             except: pass
+            
+            # --- Calculate Individual Antiquity ---
+            ant_str = "N/A"
+            try:
+                start_dt = datetime.datetime.strptime(ini_str.strip(), "%d/%m/%Y")
+                if "PLANTA" in tipo.upper() or not fin_str.strip():
+                     end_dt = datetime.datetime.now()
+                else:
+                     end_dt = datetime.datetime.strptime(fin_str.strip(), "%d/%m/%Y")
+                
+                delta_days = (end_dt - start_dt).days
+                if delta_days < 0: delta_days = 0
+                
+                y_c = delta_days // 365
+                rem_d = delta_days % 365
+                m_c = rem_d // 30
+                ant_str = f"{y_c}a {m_c}m"
+            except:
+                pass
+
             
             pdf.cell(w_c[0], 6, tipo, 1, 0, 'L')
             pdf.cell(w_c[1], 6, cargo, 1, 0, 'L')
             pdf.cell(w_c[2], 6, ini, 1, 0, 'C')
             pdf.cell(w_c[3], 6, fin, 1, 0, 'C')
-            pdf.cell(w_c[4], 6, hrs, 1, 0, 'C')
+            pdf.cell(w_c[4], 6, hrs_disp, 1, 0, 'C')
+            pdf.cell(w_c[5], 6, pdf.sanitize_text(ant_str), 1, 0, 'C')
             pdf.ln()
             
         pdf.set_font('Arial', 'B', 9)
-        pdf.cell(sum(w_c[:-1]), 7, "Total Horas Semanales", 1, 0, 'R')
-        pdf.cell(w_c[-1], 7, str(total_hrs_c), 1, 0, 'C')
+        # Total Hours Row
+        pdf.cell(sum(w_c[:4]), 7, "Total Horas Semanales", 1, 0, 'R')
+        pdf.cell(w_c[4], 7, f"{total_hrs_c:.1f}", 1, 0, 'C')
+        pdf.cell(w_c[5], 7, "", 1, 0, 'C') # Empty for antiquity col on this row
+        pdf.ln()
+
+        # Total Antiquity Row (New)
+        ant_real = extra_info.get('antiguedad_real', {'y': 0, 'm': 0})
+        ant_total_str = f"{ant_real.get('y',0)} años, {ant_real.get('m',0)} meses"
+        
+        pdf.cell(sum(w_c[:5]), 7, pdf.sanitize_text("Antigüedad Total Acumulada (Legal)"), 1, 0, 'R')
+        pdf.cell(w_c[5], 7, pdf.sanitize_text(ant_total_str), 1, 0, 'C')
         pdf.ln(5)
         
     # --- GRÁFICOS (CHARTS) ---
