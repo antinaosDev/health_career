@@ -822,6 +822,135 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
     return f"Carga masiva procesada correctamente. Insertados: {inserted_count}, Omitidos (Duplicados): {skipped_count}, Total Leídos: {len(capacitacion_v)}"
 
 
+
+def calculate_effective_seniority_data(contracts_list):
+    """
+    Core logic: Calculates total days of service using Merge Intervals to handle overlaps.
+    Returns (years, months, days, total_days_sum).
+    """
+    from datetime import datetime
+    
+    intervals = []
+    now = datetime.now()
+    
+    for c in contracts_list:
+        try:
+            s_str = str(c.get('FECHA_INICIO', '')).strip()
+            e_str = str(c.get('FECHA_TERMINO', '')).strip()
+            
+            if s_str:
+                start_date = datetime.strptime(s_str, '%d/%m/%Y')
+                
+                # Check if it's Planta or Indefinite (no end date)
+                ctype = str(c.get('TIPO_CONTRATO', '')).strip().upper()
+                
+                if 'PLANTA' in ctype or not e_str:
+                    end_date = now
+                else:
+                    end_date = datetime.strptime(e_str, '%d/%m/%Y')
+                
+                if end_date < start_date: continue # Invalid
+                
+                intervals.append([start_date, end_date])
+        except:
+            pass
+            
+    if not intervals:
+        return 0, 0, 0, 0
+        
+    # Merge Intervals
+    intervals.sort(key=lambda x: x[0])
+    
+    merged = []
+    for current in intervals:
+        if not merged:
+            merged.append(current)
+        else:
+            prev = merged[-1]
+            # If overlap or adjacent
+            if current[0] <= prev[1]:
+                # Merge
+                prev[1] = max(prev[1], current[0]) # Fix: Start depends on sorted order
+                prev[1] = max(prev[1], current[1])
+            else:
+                merged.append(current)
+                
+    total_days = 0
+    for start, end in merged:
+        total_days += (end - start).days
+        
+    # Calculate Y/M/D
+    years = total_days // 365
+    rem_days = total_days % 365
+    months = rem_days // 30
+    
+    return years, months, rem_days, total_days
+
+
+def get_next_evaluation_date(contracts_list):
+    """
+    Determines the next official evaluation date for Bienios/Level changes.
+    Rule: 
+    - Usage Base: Oldest Planta Contract Start. 
+    - If no Planta: Oldest Plazo Fijo/Any Contract Start.
+    - Cycle: Every 2 years from Base.
+    """
+    from datetime import datetime
+    
+    base_date = None
+    
+    # 1. Search for Oldest Planta
+    plantas = [c for c in contracts_list if 'PLANTA' in str(c.get('TIPO_CONTRATO','')).upper()]
+    if plantas:
+        # Sort by date
+        valid_dates = []
+        for p in plantas:
+            try: valid_dates.append(datetime.strptime(str(p.get('FECHA_INICIO','')).strip(), '%d/%m/%Y'))
+            except: pass
+        if valid_dates:
+            base_date = min(valid_dates)
+            
+    # 2. If no Planta, search for Oldest overall (preferring Plazo Fijo implicitly by assuming it's the start)
+    if not base_date:
+        valid_dates = []
+        for c in contracts_list:
+             try: valid_dates.append(datetime.strptime(str(c.get('FECHA_INICIO','')).strip(), '%d/%m/%Y'))
+             except: pass
+        if valid_dates:
+            base_date = min(valid_dates)
+            
+    if not base_date:
+        return None, None
+        
+    # 3. Calculate Next Cycle
+    # We want base + 2*N years > Now
+    now = datetime.now()
+    
+    # Calculate years passed
+    # We can iterate or calculate
+    # If base is 2023, now is 2026. 
+    # 2023 -> 2025 -> 2027. Next is 2027.
+    
+    # Crude approx:
+    years_diff = now.year - base_date.year
+    # Start checking from a bit before to be safe
+    
+    # Efficient way:
+    # Just add 2 years until > now
+    
+    # Optimization: jump to near current year
+    # (Not strictly necessary for short career spans, loop is fine)
+    
+    check_date = base_date
+    while check_date <= now:
+        try:
+            check_date = check_date.replace(year=check_date.year + 2)
+        except ValueError: # Leap year Feb 29 fix -> Mar 1
+            check_date = check_date.replace(year=check_date.year + 2, day=1, month=3)
+            
+    return base_date, check_date
+
+
 def calculate_real_seniority(contracts_list):
     y, m, d, total = calculate_effective_seniority_data(contracts_list)
     return y

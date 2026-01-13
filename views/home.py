@@ -345,37 +345,22 @@ def app():
             
             # Find earliest start date
             fechas = []
-            for c in data['conts_raw']:
-                try: 
-                    fechas.append(datetime.strptime(c.get('FECHA_INICIO'), "%d/%m/%Y"))
-                except: pass
-            
-            if fechas:
-                earliest = min(fechas)
+            if data['conts_raw']:
+                from funciones import get_next_evaluation_date
+                base_dt, next_dt = get_next_evaluation_date(data['conts_raw'])
                 
-                # Calculate Bienios using OFFICAL LOGIC (Just for display prediction)
-                antiguedad_real = calculo_años(earliest.strftime("%d/%m/%Y"))
-                bienios_calc = antiguedad_real // 2
-                
-                # Next bienio milestone in years
-                next_milestone_years = (bienios_calc + 1) * 2
-                
-                # Add years to earliest date
-                try:
-                    target_date = earliest.replace(year=earliest.year + next_milestone_years)
-                except ValueError: 
-                    target_date = earliest.replace(year=earliest.year + next_milestone_years, day=1, month=3)
-                
-                fecha_prox_bienio = target_date.strftime("%d/%m/%Y")
-                now = datetime.now()
-                days_left = (target_date - now).days
-                
-                if days_left < 0:
-                     dias_para_bienio = f"(Alcanzado hace {-days_left} días)"
-                else:
-                     dias_para_bienio = f"(faltan {days_left} días)"
+                if next_dt:
+                    fecha_prox_bienio = next_dt.strftime("%d/%m/%Y")
+                    now = datetime.now()
+                    days_left = (next_dt - now).days
                     
-
+                    if days_left < 0:
+                         dias_para_bienio = f"(Alcanzado hace {-days_left} días)"
+                    else:
+                         dias_para_bienio = f"(faltan {days_left} días)"
+                else:
+                    fecha_prox_bienio = "N/A"
+                    dias_para_bienio = ""
 
             from funciones import calculate_detailed_seniority
             y_det, m_det, d_det = calculate_detailed_seniority(data['conts_raw'])
