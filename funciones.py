@@ -597,7 +597,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 str(cont.get('RUT', '')).replace('.', '').strip(),
                 str(cont.get('TIPO_CONTRATO', '')).strip().upper(),
                 str(cont.get('CARGO', '')).strip().upper(),
-                str(cont.get('DEPENDENCIA', '')).strip().upper()
+                str(cont.get('DEPENDENCIA', '')).strip().upper(),
+                str(cont.get('FECHA_INICIO', '')).strip()
             )
             contracts_map[key] = (idc, cont)
 
@@ -615,7 +616,9 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
             # --- VALIDATION START ---
             horas_nuevas = limpio.get('HORAS', 0)
             
-            key = (rut_excel, tipo, cargo, dependencia)
+            fecha_inicio = str(limpio.get('FECHA_INICIO', '')).strip()
+            
+            key = (rut_excel, tipo, cargo, dependencia, fecha_inicio)
             id_ignorar = None
             if key in contracts_map:
                 id_ignorar, _ = contracts_map[key]
