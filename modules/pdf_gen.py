@@ -333,8 +333,10 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
     pdf.ln(3)
     
     pdf.set_font('Arial', 'B', 8)
-    w = [12, 60, 35, 35, 12, 12, 12]
-    header = ['Año', 'Nombre', 'Entidad', 'Contexto', 'Hrs', 'Pts', 'Nota']
+    pdf.set_font('Arial', 'B', 8)
+    # Adjusted widths to include "Válido?" (Total ~175)
+    w = [10, 50, 30, 30, 10, 10, 10, 15]
+    header = ['Año', 'Nombre', 'Entidad', 'Contexto', 'Hrs', 'Pts', 'Nota', 'Válido?']
     
     for i, h in enumerate(header):
         pdf.cell(w[i], 7, pdf.sanitize_text(h), 1, 0, 'C', 1)
@@ -343,12 +345,13 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
     pdf.set_font('Arial', '', 8)
     for c in caps_data:
         anio = pdf.sanitize_text(str(c.get('AÑO_PRESENTACION', '')))
-        nombre = pdf.sanitize_text(str(c.get('NOMBRE_CAPACITACION', '')))[:35]
-        entidad = pdf.sanitize_text(str(c.get('ENTIDAD', '')))[:20]
-        contexto = pdf.sanitize_text(str(c.get('CONTEXTO_PRESS', '')))[:20]
+        nombre = pdf.sanitize_text(str(c.get('NOMBRE_CAPACITACION', '')))[:30]
+        entidad = pdf.sanitize_text(str(c.get('ENTIDAD', '')))[:18]
+        contexto = pdf.sanitize_text(str(c.get('CONTEXTO_PRESS', '')))[:18]
         horas = pdf.sanitize_text(str(c.get('HORAS', '')))
         pje = pdf.sanitize_text(f"{c.get('PJE_POND', 0):.1f}")
         nota = pdf.sanitize_text(f"{c.get('NOTA', 0):.1f}")
+        valid = pdf.sanitize_text(str(c.get('VALIDO_CARRERA', 'SI'))) # Default SI if missing
         
         pdf.cell(w[0], 6, anio, 1, 0, 'C')
         pdf.cell(w[1], 6, nombre, 1, 0, 'L')
@@ -357,6 +360,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
         pdf.cell(w[4], 6, horas, 1, 0, 'C')
         pdf.cell(w[5], 6, pje, 1, 0, 'C')
         pdf.cell(w[6], 6, nota, 1, 0, 'C')
+        pdf.cell(w[7], 6, valid, 1, 0, 'C')
         pdf.ln()
 
     return pdf.output(dest='S').encode('latin-1')
