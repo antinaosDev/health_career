@@ -174,14 +174,28 @@ def app():
                 user_conts_fresh = [c for c in conts_fresh.values() if str(c.get('RUT', '')).replace('.', '').strip() == str(rut_target).replace('.', '').strip()]
                 honorario_conts_fresh = [c for c in user_conts_fresh if str(c.get('TIPO_CONTRATO', '')).strip().upper() == 'HONORARIO']
                 
-                # 3. Recalculate salary for PDF (to pass explicitly)
-                salary_data = {'total_base_aps': total_estimado_global} # We already calc'd it above, but assuming stable. 
-                # Ideally we recalculate with fresh data, but cost is minimal to trust above if no data change.
-                # Actually, fresh data is better. Recalc quickly:
+                
+                # 2b. Calculate Seniority for PDF (Global & Career)
+                from funciones import calculate_detailed_seniority, VALID_DEPS
+                
+                # Global
+                y_det, m_det, d_det, _ = calculate_detailed_seniority(user_conts_fresh)
+                
+                # Career (Filtered)
+                filtered_career = [c for c in user_conts_fresh if str(c.get('DEPENDENCIA', '')).strip() in VALID_DEPS]
+                y_sf, m_sf, d_sf, _ = calculate_detailed_seniority(filtered_career)
+                
+                extra_info = {
+                    "antiguedad_real": {'y': y_det, 'm': m_det},
+                    "antiguedad_carrera": {'y': y_sf, 'm': m_sf}
+                }
+
+                # 3. Recalculate salary for PDF
+                salary_data = {'total_base_aps': total_estimado_global} 
                 
                 pdf_total = 0
                 cat_f = user_data_fresh.get('CATEGORIA')
-                for c in honorario_conts_fresh:
+                for c in honorario_conts_fresh: # Only sum Honorarios for Salary
                     try:
                         h = int(c.get('HORAS', 0))
                         if cat_f in ['A', 'B', 'C', 'D', 'E', 'F'] and h > 0:
@@ -194,12 +208,20 @@ def app():
                 salary_data['total_base_aps'] = pdf_total
 
                 # 4. Generate PDF
+                # Force Reload module to ensure updates
+                import modules.pdf_honorarios
+                import importlib
+                importlib.reload(modules.pdf_honorarios)
+                from modules.pdf_honorarios import create_pdf_honorarios
+
+                # Pass ALL contracts (user_conts_fresh) so the table is complete
                 pdf_bytes = create_pdf_honorarios(
                     user_data=user_data_fresh, 
-                    honorario_conts=honorario_conts_fresh, 
+                    honorario_conts=user_conts_fresh, # Passing ALL contracts here 
                     estimated_salary_data=salary_data, 
                     logo_path=logo_path,
-                    logo_company_path=logo_company_path
+                    logo_company_path=logo_company_path,
+                    extra_info=extra_info
                 )
                 
                 # 5. Download Button
