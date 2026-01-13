@@ -556,9 +556,9 @@ def app():
                 if fig_cont: st.plotly_chart(fig_cont, width="stretch")
                 else: st.info("Sin contratos registrados")
 
-    # --- Training Deep Dive ---
-    st.markdown("### 🎓 Análisis Profundo de Capacitaciones")
-    col_t1, col_t2, col_t3 = st.columns(3)
+    # --- SECCIÓN 2: GRÁFICOS INTERACTIVOS ---
+    st.markdown("### 🎓 Análisis de Capacitaciones")
+    st.markdown("Explora cómo tus cursos impactan tu carrera funcionaria.")
     
     with col_t1:
         with st.container(border=True):

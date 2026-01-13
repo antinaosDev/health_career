@@ -336,7 +336,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
     pdf.set_font('Arial', 'B', 8)
     # Adjusted widths to include "Válido?" (Total ~175)
     w = [10, 50, 30, 30, 10, 10, 10, 15]
-    header = ['Año', 'Nombre', 'Entidad', 'Contexto', 'Hrs', 'Pts', 'Nota', 'Válido?']
+    header = ['Año', 'Nombre', 'Entidad', 'Contexto', 'Hrs', 'Pts', 'Nota', '¿Válido?']
     
     for i, h in enumerate(header):
         pdf.cell(w[i], 7, pdf.sanitize_text(h), 1, 0, 'C', 1)
