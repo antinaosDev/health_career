@@ -560,6 +560,8 @@ def app():
     st.markdown("### 🎓 Análisis de Capacitaciones")
     st.markdown("Explora cómo tus cursos impactan tu carrera funcionaria.")
     
+    col_t1, col_t2, col_t3 = st.columns(3)
+    
     with col_t1:
         with st.container(border=True):
             st.markdown("**Por Nivel Técnico**")
