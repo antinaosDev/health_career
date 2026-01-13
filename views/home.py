@@ -363,10 +363,25 @@ def app():
                     dias_para_bienio = ""
 
             from funciones import calculate_detailed_seniority
+
+            # 1. Global Antiquity (All Contracts)
             y_det, m_det, d_det = calculate_detailed_seniority(data['conts_raw'])
             
+            # 2. Career Antiquity (Filtered by Dependency)
+            VALID_DEPS = ['CESFAM CHOLCHOL', 'PSR HUENTELAR', 'PSR MALALCHE', 'PSR HUAMAQUI', 'SALUD APS']
+            filtered_conts = []
+            if data['conts_raw']:
+                for c in data['conts_raw']:
+                    dep = str(c.get('DEPENDENCIA', '')).strip().upper()
+                    if any(vd in dep for vd in VALID_DEPS):
+                        filtered_conts.append(c)
+            
+            y_sf, m_sf, d_sf = calculate_detailed_seniority(filtered_conts)
+            
             st.markdown(f"**Categoría:** {ud.get('CATEGORIA')} | **Bienios:** {ud.get('BIENIOS')}")
-            st.markdown(f"**Antigüedad Total:** {y_det} años, {m_det} meses")
+            st.markdown(f"**Antigüedad Total (Histórica):** {y_det} años, {m_det} meses")
+            st.markdown(f"**Antigüedad Carrera (Válida):** {y_sf} años, {m_sf} meses")
+            
             st.markdown(f"📅 **Próximo Bienio:** {fecha_prox_bienio} <span style='color: #666; font-size: 0.85em;'>{dias_para_bienio}</span>", unsafe_allow_html=True)
             
             st.markdown(f"**Edad:** {ud.get('EDAD')} años")
@@ -399,7 +414,8 @@ def app():
                     "cap_status_msg": msg_status, # Pass status
                     "cap_used": used_pts,
                     "cap_global": cap_global,
-                    "antiguedad_real": {'y': y_det, 'm': m_det}
+                    "antiguedad_real": {'y': y_det, 'm': m_det},
+                    "antiguedad_carrera": {'y': y_sf, 'm': m_sf}
                 }
                 
                 # Check Logo

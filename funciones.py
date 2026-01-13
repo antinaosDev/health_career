@@ -165,6 +165,9 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
     user_contracts_list = []
     tiene_contrato_planta = False
     
+    # Valid Dependencies for Bienios/Career Check
+    VALID_DEPS = ['CESFAM CHOLCHOL', 'PSR HUENTELAR', 'PSR MALALCHE', 'PSR HUAMAQUI', 'SALUD APS']
+    
     if datos_ant:
         for ant in datos_ant.values():
             r_c = str(ant.get('RUT', '')).replace('.', '').strip()
@@ -173,9 +176,17 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
                 tipo = str(ant.get('TIPO_CONTRATO', '')).strip().upper()
                 if 'PLANTA' in tipo:
                     tiene_contrato_planta = True
-                    
-    # Use the robust Merge Intervals Helper
-    antiguedad_years = calculate_real_seniority(user_contracts_list)
+
+    # Filter contracts for Bienios Calculation
+    qualifying_contracts = []
+    for c in user_contracts_list:
+        dep = str(c.get('DEPENDENCIA', '')).strip().upper()
+        # Check if ANY valid dependency substring is in the dependency field
+        if any(vd in dep for vd in VALID_DEPS):
+            qualifying_contracts.append(c)
+
+    # Use the robust Merge Intervals Helper on FILTERED contracts
+    antiguedad_years = calculate_real_seniority(qualifying_contracts)
     bienio = antiguedad_years // 2
     corr_carr = 'SI' if tiene_contrato_planta else 'NO'
 
