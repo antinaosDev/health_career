@@ -60,11 +60,15 @@ def get_days_to_bienio(rut, current_bienios, df_conts):
         
     return (target.date() - datetime.now().date()).days
 
+from modules.ui import render_header
+
 def app():
+    render_header()
     # Init Chart Holders safe for export scope
     fig_cat = fig_tipo = fig_sex = fig_cc = fig_cp = fig_avg_p = fig_avg_c = fig_dep = None
     
-    st.markdown("## 📊 Panel de Gestión Global")
+    # Título principal
+    st.markdown("## 🏢 Dashboard de Gestión Global (Admin)")
     st.markdown("Visión general del estado de la dotación y costos.")
     st.divider()
 

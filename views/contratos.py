@@ -9,7 +9,10 @@ from funciones import actualizacion_horaria, puntaje_nv, validar_tope_horas
 from datetime import datetime
 import time
 
+from modules.ui import render_header
+
 def app():
+    render_header()
     st.markdown("## 📄 Gestión de Contratos")
     
     rut_actual = st.session_state["usuario_rut"]
