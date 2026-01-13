@@ -404,6 +404,9 @@ def app():
             st.markdown("---")
             # PDF Generation
             try:
+                import modules.pdf_gen
+                import importlib
+                importlib.reload(modules.pdf_gen)
                 from modules.pdf_gen import create_pdf
                 import os
                 
