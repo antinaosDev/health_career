@@ -859,6 +859,8 @@ def calculate_effective_seniority_data(contracts_list):
                     end_date = now
                 else:
                     end_date = datetime.strptime(e_str, '%d/%m/%Y')
+                    if end_date > now:
+                        end_date = now
                 
                 if end_date < start_date: continue # Invalid
                 
