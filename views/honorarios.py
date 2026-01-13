@@ -178,16 +178,11 @@ def app():
                 # 2b. Calculate Seniority for PDF (Global & Career)
                 from funciones import calculate_detailed_seniority, VALID_DEPS
                 
-                # Global
-                y_det, m_det, d_det = calculate_detailed_seniority(user_conts_fresh)
-                
-                # Career (Filtered)
-                filtered_career = [c for c in user_conts_fresh if str(c.get('DEPENDENCIA', '')).strip() in VALID_DEPS]
-                y_sf, m_sf, d_sf = calculate_detailed_seniority(filtered_career)
+                # Seniority (Only for displayed Honorarios contracts)
+                y_det, m_det, d_det = calculate_detailed_seniority(honorario_conts_fresh)
                 
                 extra_info = {
-                    "antiguedad_real": {'y': y_det, 'm': m_det},
-                    "antiguedad_carrera": {'y': y_sf, 'm': m_sf}
+                    "antiguedad_real": {'y': y_det, 'm': m_det}
                 }
 
                 # 3. Recalculate salary for PDF

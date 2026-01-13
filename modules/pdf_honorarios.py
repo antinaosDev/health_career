@@ -199,19 +199,13 @@ def create_pdf_honorarios(user_data, honorario_conts, estimated_salary_data, log
         # Total Antiquity Rows
         if extra_info:
              ant_real = extra_info.get('antiguedad_real', {'y': 0, 'm': 0})
-             ant_carrera = extra_info.get('antiguedad_carrera', {'y': 0, 'm': 0})
+             # ant_carrera removed per request
              
              ant_total_str = f"{ant_real.get('y',0)} años, {ant_real.get('m',0)} meses"
-             ant_carrera_str = f"{ant_carrera.get('y',0)} años, {ant_carrera.get('m',0)} meses"
              
-             # Row 1: Global
+             # Row 1: Global (The only one)
              pdf.cell(sum(w_c[:6]), 7, pdf.sanitize_text("Antigüedad Total (Histórica)"), 1, 0, 'R')
              pdf.cell(w_c[6], 7, pdf.sanitize_text(ant_total_str), 1, 0, 'C')
-             pdf.ln()
-    
-             # Row 2: Career (Qualifying)
-             pdf.cell(sum(w_c[:6]), 7, pdf.sanitize_text("Antigüedad Carrera (Válida Bienios)"), 1, 0, 'R')
-             pdf.cell(w_c[6], 7, pdf.sanitize_text(ant_carrera_str), 1, 0, 'C')
              pdf.ln(5)
 
     return pdf.output(dest='S').encode('latin-1')
