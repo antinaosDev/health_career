@@ -159,7 +159,14 @@ def app():
                     # Tipo is now outside.
                     horas = c3.number_input("Horas Semanales", 0, 44, int(selected_data.get('HORAS', 44)))
                     # Spacer or other field
-                    dep = c4.text_input("Dependencia", value=selected_data.get('DEPENDENCIA', ''))
+                    opts_dep = ["CESFAM CHOLCHOL", "PSR HUENTELAR", "PSR MALALCHE", "PSR HUAMAQUI", "SALUD APS", "OTRO"]
+                    curr_dep = selected_data.get('DEPENDENCIA', 'CESFAM CHOLCHOL')
+                    idx_dep = opts_dep.index(curr_dep) if curr_dep in opts_dep else 5 # Default to OTRO if not found, or 0 if preferred. User didn't specify default. Let's default to CESFAM CHOLCHOL (0) if matches, or OTRO? Actually let's assume if it's new it's index 0. If existing and not in list, maybe 'OTRO' or just index 0. I'll stick to a safe default.
+                    if curr_dep not in opts_dep and curr_dep:
+                         # If current value is weird, maybe show it? No, user wants restricted list.
+                         idx_dep = 0 
+                    
+                    dep = c4.selectbox("Dependencia", opts_dep, index=idx_dep)
 
                     c5, c6 = st.columns(2)
                     # dep moved to c4
