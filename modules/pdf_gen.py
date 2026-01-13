@@ -197,7 +197,7 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
          
          # Final Note
          pdf.set_font('Arial', 'I', 8)
-         pdf.cell(0, 5, pdf.sanitize_text("(Puntaje Total = [Ingreso a Planta + Arrastre + Efectivo Anual (Topado)] + Bienios)"), 0, 1, 'C')
+         pdf.cell(0, 5, pdf.sanitize_text("(Puntaje Total = [Ingreso a Planta + Arrastre + Puntaje Anual (Con tope)] + Bienios)"), 0, 1, 'C')
          
          # --- GAP STATUS ---
          if extra_info.get("cap_status_msg"):
