@@ -7,6 +7,9 @@ import math
 import streamlit as st
 from clases import *
 
+# Global Constants
+VALID_DEPS = ['CESFAM CHOLCHOL', 'PSR HUENTELAR', 'PSR MALALCHE', 'PSR HUAMAQUI', 'SALUD APS']
+
 def porcentaje_postgrado(horas_post, rut_ev):
     datos_usr = leer_registro('usuarios')
     for id_u, usr in datos_usr.items():
