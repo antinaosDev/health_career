@@ -598,7 +598,12 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 str(cont.get('TIPO_CONTRATO', '')).strip().upper(),
                 str(cont.get('CARGO', '')).strip().upper(),
                 str(cont.get('DEPENDENCIA', '')).strip().upper(),
-                str(cont.get('FECHA_INICIO', '')).strip()
+                str(cont.get('FECHA_INICIO', '')).strip(),
+                str(cont.get('FECHA_TERMINO', '')).strip(),
+                str(cont.get('HORAS', '')).strip(),
+                str(cont.get('NOMBRE_INSTITUCION', '')).strip().upper(),
+                str(cont.get('REEMPLAZO', '')).strip().upper(),
+                str(cont.get('TIPO_INSTITUCION', '')).strip().upper()
             )
             contracts_map[key] = (idc, cont)
 
@@ -615,10 +620,19 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
             
             # --- VALIDATION START ---
             horas_nuevas = limpio.get('HORAS', 0)
-            
-            fecha_inicio = str(limpio.get('FECHA_INICIO', '')).strip()
-            
-            key = (rut_excel, tipo, cargo, dependencia, fecha_inicio)
+            # Strict Key Construction
+            key = (
+                rut_excel,
+                tipo,
+                cargo,
+                dependencia,
+                str(limpio.get('FECHA_INICIO', '')).strip(),
+                str(limpio.get('FECHA_TERMINO', '')).strip(),
+                str(limpio.get('HORAS', '')).strip(),
+                str(limpio.get('NOMBRE_INSTITUCION', '')).strip().upper(),
+                str(limpio.get('REEMPLAZO', '')).strip().upper(),
+                str(limpio.get('TIPO_INSTITUCION', '')).strip().upper()
+            )
             id_ignorar = None
             if key in contracts_map:
                 id_ignorar, _ = contracts_map[key]
