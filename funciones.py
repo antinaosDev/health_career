@@ -483,7 +483,6 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     elem[k] = ""
 
     # Dynamic Header Detection Logic
-    ctx = get_script_run_ctx()
     
     import re
 
