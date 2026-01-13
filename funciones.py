@@ -716,9 +716,18 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
     if isinstance(capacitaciones, dict):
         caps_map = {}
         for idc, cap in capacitaciones.items():
+            # Composite Key for Strict Duplicate Detection
+            # RUT, AÑO_INICIO, AÑO_PRESENTACION, NOMBRE_CAPACITACION, ENTIDAD, NIVEL_TECNICO, HORAS, NOTA, CONTEXTO_PRESS
             key = (
                 clean_text(cap.get('RUT', '')).replace('.', ''),
-                clean_text(cap.get('NOMBRE_CAPACITACION', ''))
+                clean_text(cap.get('AÑO_INICIO', 0)),
+                clean_text(cap.get('AÑO_PRESENTACION', 0)),
+                clean_text(cap.get('NOMBRE_CAPACITACION', '')),
+                clean_text(cap.get('ENTIDAD', '')),
+                clean_text(cap.get('NIVEL_TECNICO', '')),
+                clean_text(cap.get('HORAS', 0)),
+                clean_text(cap.get('NOTA', 0)),
+                clean_text(cap.get('CONTEXTO_PRESS', ''))
             )
             caps_map[key] = (idc, cap)
 
@@ -729,12 +738,9 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
     
                 rut_excel = clean_text(idv.get('RUT', '')).replace('.', '')
                 affected_ruts.add(rut_excel)
-                nombre = clean_text(idv.get('NOMBRE_CAPACITACION', ''))
                 
-                key = (rut_excel, nombre)
-                
+                # Create Candidate Object & Dict
                 category = usuarios_por_rut.get(rut_excel, '')
-                
                 cap_obj = Capacitacion(
                     rut_excel,
                     category,
@@ -750,15 +756,30 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     valido_carrera=idv.get('VALIDO_CARRERA')
                 )
                 candidate_dict = cap_obj.crear_dict_capacitacion()
+                
+                # Generate Key from Candidate Dict (Normalized)
+                key = (
+                    clean_text(candidate_dict.get('RUT', '')).replace('.', ''),
+                    clean_text(candidate_dict.get('AÑO_INICIO', 0)),
+                    clean_text(candidate_dict.get('AÑO_PRESENTACION', 0)),
+                    clean_text(candidate_dict.get('NOMBRE_CAPACITACION', '')),
+                    clean_text(candidate_dict.get('ENTIDAD', '')),
+                    clean_text(candidate_dict.get('NIVEL_TECNICO', '')),
+                    clean_text(candidate_dict.get('HORAS', 0)),
+                    clean_text(candidate_dict.get('NOTA', 0)),
+                    clean_text(candidate_dict.get('CONTEXTO_PRESS', ''))
+                )
     
                 if key in caps_map:
                     idc, cap_db = caps_map[key]
-                    # CHECK DIFF BEFORE UPDATE
+                    # CHECK DIFF BEFORE UPDATE (Focus on ES_POSTGRADO and VALIDO_CARRERA)
                     is_different = False
-                    for k, v in candidate_dict.items():
-                        if k in ['PJE_NV_TEC', 'PJE_HORAS', 'PJE_NOTA', 'PJE_POND']: continue
-                        
-                        val_excel = clean_text(v)
+                    
+                    # We check specifically for the fields that are NOT in the key but matter
+                    fields_to_check = ['ES_POSTGRADO', 'VALIDO_CARRERA']
+                    
+                    for k in fields_to_check:
+                        val_excel = clean_text(candidate_dict.get(k))
                         val_db = cap_db.get(k)
                         val_db_norm = clean_text(val_db)
                         
@@ -768,6 +789,7 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     
                     if is_different:
                         actualizar_registro('capacitaciones', candidate_dict, idc)
+                        print(f"🔄 Actualizando registro (ID: {idc}) para RUT {rut_excel} - Cambio en Postgrado/Validez")
                 else:
                     ingresar_registro_bd('capacitaciones', candidate_dict)
             except Exception as e:
