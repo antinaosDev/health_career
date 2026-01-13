@@ -162,8 +162,6 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
             pdf.cell(w_bd[5], 5, f"{bd.get('SALDO_GENERADO',0):.1f}", 1, 0, 'C')
             pdf.cell(w_bd[6], 5, f"{bd.get('SALDO_ACUMULADO',0):.1f}", 1, 0, 'C')
             pdf.ln()
-            pdf.cell(w_bd[6], 5, f"{bd.get('SALDO_ACUMULADO',0):.1f}", 1, 0, 'C')
-            pdf.ln()
             
         pdf.ln(2)
         
