@@ -214,10 +214,10 @@ def app():
                 importlib.reload(modules.pdf_honorarios)
                 from modules.pdf_honorarios import create_pdf_honorarios
 
-                # Pass ALL contracts (user_conts_fresh) so the table is complete
+                # Pass ONLY Honorarios contracts (honorario_conts_fresh) but keep detailed structure
                 pdf_bytes = create_pdf_honorarios(
                     user_data=user_data_fresh, 
-                    honorario_conts=user_conts_fresh, # Passing ALL contracts here 
+                    honorario_conts=honorario_conts_fresh, # Reverted to filtered list 
                     estimated_salary_data=salary_data, 
                     logo_path=logo_path,
                     logo_company_path=logo_company_path,
