@@ -483,6 +483,17 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     elem[k] = ""
 
     # Dynamic Header Detection Logic
+    ctx = get_script_run_ctx()
+    
+    import re
+
+    def clean_text(val):
+        """Normalize text: Upper, Remove double spaces, Strip."""
+        if val is None: return ""
+        s = str(val).upper()
+        s = re.sub(r'\s+', ' ', s) # Collapse multiple spaces
+        return s.strip()
+
     idx_user = 0
     idx_cont = 1
     idx_cap = 2
@@ -568,11 +579,11 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 is_different = False
                 for k, v in limpio.items():
                     if k == 'RUT': continue
-                    val_excel = str(v).strip().upper() if isinstance(v, str) else v
+                    val_excel = clean_text(v)
                     val_db = usr_db.get(k)
-                    val_db_norm = str(val_db).strip().upper() if isinstance(val_db, str) else val_db
+                    val_db_norm = clean_text(val_db)
                     
-                    if str(val_excel) != str(val_db_norm):
+                    if val_excel != val_db_norm:
                         is_different = True
                         break
                 
@@ -587,15 +598,6 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 r = str(limpio.get('RUT', '')).replace('.', '').strip()
                 affected_ruts.add(r)
                 ingresar_registro_bd('usuarios', limpio)
-
-    import re
-
-    def clean_text(val):
-        """Normalize text: Upper, Remove double spaces, Strip."""
-        if val is None: return ""
-        s = str(val).upper()
-        s = re.sub(r'\s+', ' ', s) # Collapse multiple spaces
-        return s.strip()
 
     # 2. CONTRACTS (CONTRATO)
     if isinstance(contratos, dict):
@@ -714,8 +716,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
         caps_map = {}
         for idc, cap in capacitaciones.items():
             key = (
-                str(cap.get('RUT', '')).replace('.', '').strip(),
-                str(cap.get('NOMBRE_CAPACITACION', '')).strip().upper()
+                clean_text(cap.get('RUT', '')).replace('.', ''),
+                clean_text(cap.get('NOMBRE_CAPACITACION', ''))
             )
             caps_map[key] = (idc, cap)
 
@@ -724,9 +726,9 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 idv = limpiar_nans(idv_l)
                 if not idv: continue
     
-                rut_excel = str(idv.get('RUT', '')).replace('.', '').strip()
+                rut_excel = clean_text(idv.get('RUT', '')).replace('.', '')
                 affected_ruts.add(rut_excel)
-                nombre = str(idv.get('NOMBRE_CAPACITACION', '')).strip().upper()
+                nombre = clean_text(idv.get('NOMBRE_CAPACITACION', ''))
                 
                 key = (rut_excel, nombre)
                 
@@ -754,9 +756,9 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     for k, v in candidate_dict.items():
                         if k in ['PJE_NV_TEC', 'PJE_HORAS', 'PJE_NOTA', 'PJE_POND']: continue
                         
-                        val_excel = str(v).strip().upper() if isinstance(v, str) else str(v)
+                        val_excel = clean_text(v)
                         val_db = cap_db.get(k)
-                        val_db_norm = str(val_db).strip().upper() if val_db is not None else ''
+                        val_db_norm = clean_text(val_db)
                         
                         if val_excel != val_db_norm:
                             is_different = True
