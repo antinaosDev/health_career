@@ -588,22 +588,30 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 affected_ruts.add(r)
                 ingresar_registro_bd('usuarios', limpio)
 
+    import re
+
+    def clean_text(val):
+        """Normalize text: Upper, Remove double spaces, Strip."""
+        if val is None: return ""
+        s = str(val).upper()
+        s = re.sub(r'\s+', ' ', s) # Collapse multiple spaces
+        return s.strip()
 
     # 2. CONTRACTS (CONTRATO)
     if isinstance(contratos, dict):
         contracts_map = {}
         for idc, cont in contratos.items():
             key = (
-                str(cont.get('RUT', '')).replace('.', '').strip(),
-                str(cont.get('TIPO_CONTRATO', '')).strip().upper(),
-                str(cont.get('CARGO', '')).strip().upper(),
-                str(cont.get('DEPENDENCIA', '')).strip().upper(),
-                str(cont.get('FECHA_INICIO', '')).strip(),
-                str(cont.get('FECHA_TERMINO', '')).strip(),
-                str(cont.get('HORAS', '')).strip(),
-                str(cont.get('NOMBRE_INSTITUCION', '')).strip().upper(),
-                str(cont.get('REEMPLAZO', '')).strip().upper(),
-                str(cont.get('TIPO_INSTITUCION', '')).strip().upper()
+                clean_text(cont.get('RUT', '')).replace('.', ''),
+                clean_text(cont.get('TIPO_CONTRATO', '')),
+                clean_text(cont.get('CARGO', '')),
+                clean_text(cont.get('DEPENDENCIA', '')),
+                clean_text(cont.get('FECHA_INICIO', '')),
+                clean_text(cont.get('FECHA_TERMINO', '')),
+                clean_text(cont.get('HORAS', '')),
+                clean_text(cont.get('NOMBRE_INSTITUCION', '')),
+                clean_text(cont.get('REEMPLAZO', '')),
+                clean_text(cont.get('TIPO_INSTITUCION', ''))
             )
             contracts_map[key] = (idc, cont)
 
@@ -611,12 +619,12 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
             limpio = limpiar_nans(i)
             if not limpio: continue
             
-            rut_excel = str(limpio.get('RUT', '')).replace('.', '').strip()
+            rut_excel = clean_text(limpio.get('RUT', '')).replace('.', '')
             affected_ruts.add(rut_excel)
             
-            tipo = str(limpio.get('TIPO_CONTRATO', '')).strip().upper()
-            cargo = str(limpio.get('CARGO', '')).strip().upper()
-            dependencia = str(limpio.get('DEPENDENCIA', '')).strip().upper()
+            tipo = clean_text(limpio.get('TIPO_CONTRATO', ''))
+            cargo = clean_text(limpio.get('CARGO', ''))
+            dependencia = clean_text(limpio.get('DEPENDENCIA', ''))
             
             # --- VALIDATION START ---
             horas_nuevas = limpio.get('HORAS', 0)
@@ -626,12 +634,12 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                 tipo,
                 cargo,
                 dependencia,
-                str(limpio.get('FECHA_INICIO', '')).strip(),
-                str(limpio.get('FECHA_TERMINO', '')).strip(),
-                str(limpio.get('HORAS', '')).strip(),
-                str(limpio.get('NOMBRE_INSTITUCION', '')).strip().upper(),
-                str(limpio.get('REEMPLAZO', '')).strip().upper(),
-                str(limpio.get('TIPO_INSTITUCION', '')).strip().upper()
+                clean_text(limpio.get('FECHA_INICIO', '')),
+                clean_text(limpio.get('FECHA_TERMINO', '')),
+                clean_text(limpio.get('HORAS', '')),
+                clean_text(limpio.get('NOMBRE_INSTITUCION', '')),
+                clean_text(limpio.get('REEMPLAZO', '')),
+                clean_text(limpio.get('TIPO_INSTITUCION', ''))
             )
             id_ignorar = None
             if key in contracts_map:
