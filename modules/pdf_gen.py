@@ -214,21 +214,22 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
     if conts_data:
         if pdf.get_y() > 230: pdf.add_page()
         pdf.chapter_title("Resumen Contractual")
-        pdf.set_font('Arial', 'B', 9)
-        # Expanded headers and widths
-        w_c = [40, 50, 25, 25, 20, 30] # Total 190
-        header_c = ['Tipo Contrato', 'Cargo', 'Inicio', 'Término', 'Horas', 'Antigüedad']
+        pdf.set_font('Arial', 'B', 8)
+        # Expanded headers and widths [Type, Inst, Cargo, Start, End, Hrs, Ant]
+        w_c = [25, 40, 45, 20, 20, 15, 25] # Total 190
+        header_c = ['Tipo Contrato', 'Institución', 'Cargo', 'Inicio', 'Término', 'Horas', 'Antigüedad']
         
         for i, h in enumerate(header_c):
             pdf.cell(w_c[i], 7, pdf.sanitize_text(h), 1, 0, 'C', 1)
         pdf.ln()
         
-        pdf.set_font('Arial', '', 9)
+        pdf.set_font('Arial', '', 8)
         total_hrs_c = 0.0
         
         for c in conts_data:
-            tipo = pdf.sanitize_text(str(c.get('TIPO_CONTRATO', '')))
-            cargo = pdf.sanitize_text(str(c.get('CARGO', ''))[:25])
+            tipo = pdf.sanitize_text(str(c.get('TIPO_CONTRATO', '')))[:18]
+            inst = pdf.sanitize_text(str(c.get('NOMBRE_INSTITUCION', '')))[:22]
+            cargo = pdf.sanitize_text(str(c.get('CARGO', '')))[:28]
             ini_str = str(c.get('FECHA_INICIO', ''))
             fin_str = str(c.get('FECHA_TERMINO', ''))
             
@@ -248,6 +249,8 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
                      end_dt = datetime.datetime.now()
                 else:
                      end_dt = datetime.datetime.strptime(fin_str.strip(), "%d/%m/%Y")
+                     if end_dt > datetime.datetime.now(): # Fix future cap per request
+                         end_dt = datetime.datetime.now()
                 
                 delta_days = (end_dt - start_dt).days
                 if delta_days < 0: delta_days = 0
@@ -261,18 +264,20 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
 
             
             pdf.cell(w_c[0], 6, tipo, 1, 0, 'L')
-            pdf.cell(w_c[1], 6, cargo, 1, 0, 'L')
-            pdf.cell(w_c[2], 6, ini, 1, 0, 'C')
-            pdf.cell(w_c[3], 6, fin, 1, 0, 'C')
-            pdf.cell(w_c[4], 6, hrs_disp, 1, 0, 'C')
-            pdf.cell(w_c[5], 6, pdf.sanitize_text(ant_str), 1, 0, 'C')
+            pdf.cell(w_c[1], 6, inst, 1, 0, 'L')
+            pdf.cell(w_c[2], 6, cargo, 1, 0, 'L')
+            pdf.cell(w_c[3], 6, ini, 1, 0, 'C')
+            pdf.cell(w_c[4], 6, fin, 1, 0, 'C')
+            pdf.cell(w_c[5], 6, hrs_disp, 1, 0, 'C')
+            pdf.cell(w_c[6], 6, pdf.sanitize_text(ant_str), 1, 0, 'C')
             pdf.ln()
             
         pdf.set_font('Arial', 'B', 9)
         # Total Hours Row
-        pdf.cell(sum(w_c[:4]), 7, "Total Horas Semanales", 1, 0, 'R')
-        pdf.cell(w_c[4], 7, f"{total_hrs_c:.1f}", 1, 0, 'C')
-        pdf.cell(w_c[5], 7, "", 1, 0, 'C') # Empty for antiquity col on this row
+        # Colspan items 0-4 (5 cols)
+        pdf.cell(sum(w_c[:5]), 7, "Total Horas Semanales", 1, 0, 'R')
+        pdf.cell(w_c[5], 7, f"{total_hrs_c:.1f}", 1, 0, 'C')
+        pdf.cell(w_c[6], 7, "", 1, 0, 'C') 
         pdf.ln()
 
         # Total Antiquity Rows
@@ -283,13 +288,13 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
         ant_carrera_str = f"{ant_carrera.get('y',0)} años, {ant_carrera.get('m',0)} meses"
         
         # Row 1: Global
-        pdf.cell(sum(w_c[:5]), 7, pdf.sanitize_text("Antigüedad Total (Histórica)"), 1, 0, 'R')
-        pdf.cell(w_c[5], 7, pdf.sanitize_text(ant_total_str), 1, 0, 'C')
+        pdf.cell(sum(w_c[:6]), 7, pdf.sanitize_text("Antigüedad Total (Histórica)"), 1, 0, 'R')
+        pdf.cell(w_c[6], 7, pdf.sanitize_text(ant_total_str), 1, 0, 'C')
         pdf.ln()
 
         # Row 2: Career (Qualifying)
-        pdf.cell(sum(w_c[:5]), 7, pdf.sanitize_text("Antigüedad Carrera (Válida Bienios)"), 1, 0, 'R')
-        pdf.cell(w_c[5], 7, pdf.sanitize_text(ant_carrera_str), 1, 0, 'C')
+        pdf.cell(sum(w_c[:6]), 7, pdf.sanitize_text("Antigüedad Carrera (Válida Bienios)"), 1, 0, 'R')
+        pdf.cell(w_c[6], 7, pdf.sanitize_text(ant_carrera_str), 1, 0, 'C')
         pdf.ln(5)
         
     # --- GRÁFICOS (CHARTS) ---
