@@ -289,6 +289,9 @@ def create_pdf(user_data, caps_data, conts_data, extra_info, logo_path, logo_com
                 y_c = delta_days // 365
                 rem_d = delta_days % 365
                 m_c = rem_d // 30
+                if m_c >= 12:
+                    y_c += 1
+                    m_c = 0
                 ant_str = f"{y_c}a {m_c}m"
             except:
                 pass

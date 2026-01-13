@@ -927,6 +927,14 @@ def calculate_effective_seniority_data(contracts_list):
     rem_days = total_days % 365
     months = rem_days // 30
     
+    # Correction: If months == 12, adding a year isn't strictly precise without full calendar math, 
+    # but for this approx logic, 12 months is colloquially 1 year.
+    # However, 'rem_days' could be 360-364.
+    if months >= 12:
+        years += 1
+        months = 0
+        rem_days = 0 # Approximate remainder clear
+    
     return years, months, rem_days, total_days
 
 
