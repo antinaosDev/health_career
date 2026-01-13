@@ -60,7 +60,7 @@ class Contrato:
 
 
 class Capacitacion:
-    def __init__(self, rut, cat, nombre_cap, entidad, horas_cap, nv_tec, nota, año_inic, año_pres,cont_press,post, tipo_cap=''):
+    def __init__(self, rut, cat, nombre_cap, entidad, horas_cap, nv_tec, nota, año_inic, año_pres,cont_press,post, tipo_cap='', valido_carrera='SI'):
         self.cat = cat
         self.rut = rut
         self.nombre_capacitacion = nombre_cap
@@ -93,6 +93,12 @@ class Capacitacion:
         self.cont_press = cont_press
         self.post = post
         self.tipo_cap = tipo_cap
+        
+        # Logic: If 'Ingreso a Planta', FORCE Valid to 'SI'
+        if str(self.cont_press).strip() == "Ingreso a Planta":
+            self.valido_carrera = 'SI'
+        else:
+            self.valido_carrera = valido_carrera
 
 
 
@@ -107,8 +113,9 @@ class Capacitacion:
             'AÑO_INICIO': self.año_inicio,
             'AÑO_PRESENTACION': self.año_presentacion,
             'CONTEXTO_PRESS':self.cont_press,
-            'ES_POSTGRADO':self.post,#Se agregó
-            'TIPO_CAPACITACION': self.tipo_cap
+            'ES_POSTGRADO':self.post,
+            'TIPO_CAPACITACION': self.tipo_cap,
+            'VALIDO_CARRERA': self.valido_carrera
         }
 
         # Calcular PJE_NV_TEC según categoría y nivel técnico

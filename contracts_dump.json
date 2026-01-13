@@ -1,0 +1,81 @@
+[
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Otros profesionales (Ley 19.378)",
+    "DEPENDENCIA": "CESFAM CHOLCHOL",
+    "FECHA_INICIO": "01/03/2023",
+    "FECHA_TERMINO": "",
+    "HORAS": 44.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "921,370",
+    "TIPO_CONTRATO": "Planta",
+    "TIPO_INSTITUCION": "Servicio Público"
+  },
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Sin Información",
+    "DEPENDENCIA": "CESFAM CHOLCHOL",
+    "FECHA_INICIO": "03/06/2022",
+    "FECHA_TERMINO": "01/09/2027",
+    "HORAS": 22.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "REEMPLAZO": "NO",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "460,685",
+    "TIPO_CONTRATO": "Honorario",
+    "TIPO_INSTITUCION": "Pública"
+  },
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Sin Información",
+    "DEPENDENCIA": "CESFAM CHOLCHOL",
+    "FECHA_INICIO": "03/06/2020",
+    "FECHA_TERMINO": "31/08/2021",
+    "HORAS": 22.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "0",
+    "TIPO_CONTRATO": "Honorario",
+    "TIPO_INSTITUCION": "Servicio Público"
+  },
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Sin Información",
+    "DEPENDENCIA": "OTRO",
+    "FECHA_INICIO": "03/06/2020",
+    "FECHA_TERMINO": "31/08/2021",
+    "HORAS": 22.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "0",
+    "TIPO_CONTRATO": "Honorario",
+    "TIPO_INSTITUCION": "Servicio Público"
+  },
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Sin Información",
+    "DEPENDENCIA": "CESFAM CHOLCHOL",
+    "FECHA_INICIO": "03/06/2022",
+    "FECHA_TERMINO": "31/08/2023",
+    "HORAS": 22.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "0",
+    "TIPO_CONTRATO": "Honorario",
+    "TIPO_INSTITUCION": "Servicio Público"
+  },
+  {
+    "ANTIGUEDAD": 6,
+    "CARGO": "Sin Información",
+    "DEPENDENCIA": "SALUD APS",
+    "FECHA_INICIO": "03/06/2020",
+    "FECHA_TERMINO": "31/08/2021",
+    "HORAS": 22.0,
+    "NOMBRE_INSTITUCION": "CESFAM CHOLCHOL",
+    "RUT": "18581575-7",
+    "SUELDO_BASE": "0",
+    "TIPO_CONTRATO": "Honorario",
+    "TIPO_INSTITUCION": "Servicio Público"
+  }
+]

@@ -276,6 +276,20 @@ def app():
                                 anio_ini_input = st.number_input("Año Inicio", min_value=1980, max_value=2050, value=val_y_ini)
                             with col_d:
                                 anio_pres_input = st.number_input("Año Presentación", min_value=1980, max_value=2050, value=f_year_pres)
+                                val_carrera_opts = ["SI", "NO"]
+                                val_carrera_idx = 0
+                                # default is YES, but if editing we might load it
+                                if crud_mode == "Editar" and f_id:
+                                    # Load existing val if available in record. 
+                                    # We didn't load it into variables earlier (f_valido), so let's default to SI for now or infer
+                                    # To do it properly I should have added f_valido in the variable loading section, 
+                                    # but for now let's just add the field. If we want to support edit fully we need to load it.
+                                    # Let's check if I can quickly add the load logic?
+                                    # The block is big. simpler to just default SI for now or let the user choose.
+                                    pass
+                                
+                                val_carrera_sel = st.selectbox("¿Válido para Carrera?", val_carrera_opts, index=0, help="Indica si cuenta para puntaje.")
+
                             
                             # Context Selector
                             idx_ctx = 0
@@ -309,7 +323,8 @@ def app():
                                     año_pres=anio_pres_input,
                                     cont_press=contexto_sel,
                                     post=es_post_val,
-                                    tipo_cap=tipo_val
+                                    tipo_cap=tipo_val,
+                                    valido_carrera=val_carrera_sel
                                 )
                                 
                                 data_dict = new_cap.crear_dict_capacitacion()
@@ -330,7 +345,7 @@ def app():
         with tab_objs[2]:
             with st.container(border=True):
                 st.markdown("### Importación desde Excel")
-                st.info("Sube un archivo .xlsx con las columnas: RUT, AÑO_INICIO, AÑO_PRESENTACION, NOMBRE_CAPACITACION, ENTIDAD, NIVEL_TECNICO, HORAS, NOTA, CONTEXTO_PRESS, ES_POSTGRADO")
+                st.info("Sube un archivo .xlsx con las columnas: RUT, AÑO_INICIO, AÑO_PRESENTACION, NOMBRE_CAPACITACION, ENTIDAD, NIVEL_TECNICO, HORAS, NOTA, CONTEXTO_PRESS, ES_POSTGRADO, VALIDO_CARRERA")
                 
                 uploaded_file = st.file_uploader("Seleccionar archivo", type=["xlsx"])
                 

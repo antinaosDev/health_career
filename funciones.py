@@ -158,11 +158,14 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
                     pje = cap.get('PJE_POND') or 0
                     puntaje_planta.append(pje)
                 else:
-                    # Generic Annual Points
-                    año = cap.get('AÑO_PRESENTACION')
-                    pje = cap.get('PJE_POND') or 0
-                    if año: # Valid year
-                         dict_puntaje.append((año, pje))
+                    # Check if Valid for Career
+                    es_valido = str(cap.get('VALIDO_CARRERA', 'SI')).strip().upper()
+                    if es_valido == 'SI':
+                        # Generic Annual Points
+                        año = cap.get('AÑO_PRESENTACION')
+                        pje = cap.get('PJE_POND') or 0
+                        if año: # Valid year
+                             dict_puntaje.append((año, pje))
 
     # 3. Calculate Antiquity (Bienios) - UPDATED LOGIC (Consolidated with Seniority Helper)
     user_contracts_list = []
@@ -743,7 +746,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     idv.get('AÑO_INICIO', 0),
                     idv.get('AÑO_PRESENTACION', 0),
                     idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
-                    idv.get('ES_POSTGRADO')
+                    idv.get('ES_POSTGRADO'),
+                    valido_carrera=idv.get('VALIDO_CARRERA')
                 )
                 candidate_dict = cap_obj.crear_dict_capacitacion()
     
@@ -790,7 +794,8 @@ def carga_masiva(ruta_archivo, rut_ev='', categoria=''):
                     idv.get('AÑO_INICIO', 0),
                     idv.get('AÑO_PRESENTACION', 0),
                     idv.get('CONTEXTO_PRESENTACION') or idv.get('CONTEXTO_PRESS'),
-                    idv.get('ES_POSTGRADO')
+                    idv.get('ES_POSTGRADO'),
+                    valido_carrera=idv.get('VALIDO_CARRERA')
                 )
                 ingresar_registro_bd('capacitaciones', cap.crear_dict_capacitacion())
             except Exception as e:
