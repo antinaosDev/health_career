@@ -3,16 +3,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from firebase_bd import leer_registro
-from indices import nv_tec_AB, nv_tec_CF, horas_cap, aprobacion, indices_niveles
+from indices import nv_tec_AF, horas_cap, aprobacion, indices_niveles
 from datetime import datetime
 
 def calcular_puntos_simulados(categoria, nivel_tec, horas, nota):
     # 1. PJE_NV_TEC
-    pje_nv = 0
-    if categoria in ['A', 'B']:
-        pje_nv = nv_tec_AB.get(nivel_tec, 0)
-    else:
-        pje_nv = nv_tec_CF.get(nivel_tec, 0)
+    pje_nv = nv_tec_AF.get(nivel_tec, 0)
     
     # 2. PJE_HORAS
     pje_horas = 0

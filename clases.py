@@ -118,15 +118,10 @@ class Capacitacion:
             'VALIDO_CARRERA': self.valido_carrera
         }
 
-        # Calcular PJE_NV_TEC según categoría y nivel técnico
-        if self.cat in ('A', 'B'):
-            for k, v in nv_tec_AB.items():
-                if k == self.nivel_tecnico:
-                    dict_cap['PJE_NV_TEC'] = v
-        else:
-            for k, v in nv_tec_CF.items():
-                if k == self.nivel_tecnico:
-                    dict_cap['PJE_NV_TEC'] = v
+        # Calcular PJE_NV_TEC
+        for k, v in nv_tec_AF.items():
+            if k == self.nivel_tecnico:
+                dict_cap['PJE_NV_TEC'] = v
 
         # Calcular PJE_HORAS
         for k, v in horas_cap.items():
