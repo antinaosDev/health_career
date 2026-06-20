@@ -1124,6 +1124,37 @@ def recalcular_todo(progress_callback=None):
         if login_data:
             roles_map = {str(l.get('ID', '')).replace('.', '').strip(): l.get('ROL', '') for l in login_data.values()}
 
+        # 1.5. Recalcular todas las capacitaciones (PJE_POND base)
+        if latest_caps:
+            if progress_callback: progress_callback(0, "Verificando puntajes base de capacitaciones...")
+            for id_cap, cap in latest_caps.items():
+                rut_cap = cap.get('RUT')
+                cat_cap = 'F'
+                if rut_cap and rut_cap in latest_users:
+                    cat_cap = latest_users[rut_cap].get('CATEGORIA', 'F')
+                    
+                cap_obj = Capacitacion(
+                    rut_cap,
+                    cat_cap,
+                    cap.get('NOMBRE_CAPACITACION'),
+                    cap.get('ENTIDAD'),
+                    cap.get('HORAS'),
+                    cap.get('NIVEL_TECNICO'),
+                    cap.get('NOTA'),
+                    cap.get('AÑO_INICIO'),
+                    cap.get('AÑO_PRESENTACION'),
+                    cap.get('CONTEXTO_PRESS') or cap.get('CONTEXTO_PRESENTACION'),
+                    cap.get('ES_POSTGRADO'),
+                    cap.get('TIPO_CAPACITACION', ''),
+                    cap.get('VALIDO_CARRERA', 'SI')
+                )
+                nuevo_dict = cap_obj.crear_dict_capacitacion()
+                
+                # Solo actualizar en BD si hubo cambio real en el puntaje ponderado
+                if nuevo_dict.get('PJE_POND') != cap.get('PJE_POND'):
+                    actualizar_registro('capacitaciones', nuevo_dict, id_cap)
+                    latest_caps[id_cap] = nuevo_dict # Actualizar caché para el paso 2
+
         # 2. Iterate All Users
         all_ruts = set()
         for u in latest_users.values():

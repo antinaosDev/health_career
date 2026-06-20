@@ -72,7 +72,11 @@ class Capacitacion:
         except:
             self.horas = 0
             
-        self.nivel_tecnico = nv_tec
+        if nv_tec and isinstance(nv_tec, str):
+            self.nivel_tecnico = nv_tec.strip().capitalize()
+        else:
+            self.nivel_tecnico = nv_tec
+            
         try:
             nota = str(nota).replace(",", ".")  # Reemplazar coma por punto en la nota
             self.nota = float(nota)
