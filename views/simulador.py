@@ -3,12 +3,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from firebase_bd import leer_registro
-from indices import nv_tec_AF, horas_cap, aprobacion, indices_niveles
+from indices import nv_tec_AB, nv_tec_CF, horas_cap, aprobacion, indices_niveles
 from datetime import datetime
 
 def calcular_puntos_simulados(categoria, nivel_tec, horas, nota):
     # 1. PJE_NV_TEC
-    pje_nv = nv_tec_AF.get(nivel_tec, 0)
+    pje_nv = nv_tec_AB.get(nivel_tec, 0) if categoria in ['A', 'B'] else nv_tec_CF.get(nivel_tec, 0)
     
     # 2. PJE_HORAS
     pje_horas = 0
@@ -93,7 +93,7 @@ def app():
     categoria = usuario.get('CATEGORIA', 'E') 
     
     # Determine Annual Limit
-    limit_anual = 150 if categoria in ['A', 'B'] else 117
+    limit_anual = 150
     
     # Identify Current Level
     nivel_actual, prox_nivel, ptos_para_nivel = obtener_meta_proximo_nivel(current_score, categoria)
@@ -157,7 +157,8 @@ def app():
         # Training Score = PTJE_CARR - Bienios Score
         
         bienios_count_initial = int(usuario.get('BIENIOS', 0))
-        bienios_score_initial = bienios_count_initial * 534
+        bienios_count_initial = min(bienios_count_initial, 15)
+        bienios_score_initial = min(bienios_count_initial * 534, 8000)
         
         # running_training_score is the component subject to Cap
         running_training_score = current_score - bienios_score_initial
@@ -241,7 +242,8 @@ def app():
             # running_score was: Training + Bienios
             # Now running_score = running_training_score + (running_antiguedad // 2 * 534)
             
-            bienios_total_sim = (running_antiguedad // 2) * 534
+            bienios_sim = min(running_antiguedad // 2, 15)
+            bienios_total_sim = min(bienios_sim * 534, 8000)
             running_score = running_training_score + bienios_total_sim
             
             # Identify Level

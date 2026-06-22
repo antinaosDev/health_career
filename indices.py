@@ -2,11 +2,16 @@
 
 # Definición de los índices de ponderación
 
-
-nv_tec_AF = {
+nv_tec_AB = {
     'Bajo': 1.2,
     'Medio': 1.5,
     'Alto': 1.8
+}
+
+nv_tec_CF = {
+    'Bajo': 1.0,
+    'Medio': 1.1,
+    'Alto': 1.2
 }
 
 

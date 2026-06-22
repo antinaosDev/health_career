@@ -79,7 +79,7 @@ def get_dashboard_data(rut):
     # NEW: Read Pre-Calculated Breakdown from DB
     breakdown_data = []
     summary_pts = {}
-    cat_limit = 150 if cat in ['A', 'B'] else 117
+    cat_limit = 150
     
     import json
     if user_data.get('DETALLE_CALCULO'):
@@ -274,9 +274,9 @@ def app():
         with c_exp2:
              st.markdown("""
             **Componentes del Puntaje Total:**
-            1. **Puntaje Base**: Bienios.
-            2. **Puntaje Sujeto a Tope Global**: Ingreso a Planta + Cambio de Nivel + Arrastre.
-            3. **Tope Global**: 4.500 (A/B) o 3.500 (C-F).
+            1. **Experiencia (Bienios)**: Tope legal de 15 bienios (Máx. 8.000 pts) según Art. 41 Ley 19.378.
+            2. **Capacitación Sujeta a Tope**: Ingreso a Planta + Cambio de Nivel + Arrastre.
+            3. **Tope Global Capacitación**: 4.500 (A/B) o 3.500 (C-F) según Art. 42 Ley 19.378.
             """)
             
         st.markdown("##### 📅 Desglose Anual de Puntos y Saldo")

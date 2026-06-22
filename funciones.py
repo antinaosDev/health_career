@@ -135,13 +135,8 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
                 categoria_user = usr.get('CATEGORIA', '')
                 break
     
-    # Set Limit based on Category (A/B=150, C-F=117)
-    if categoria_user in ['A', 'B']:
-        limit_anual = 150
-    elif categoria_user in ['C', 'D', 'E', 'F']:
-        limit_anual = 117
-    else:
-        limit_anual = 150 # Fallback default
+    # Set Limit based on Category
+    limit_anual = 150
     
     # 2. Process Capacitaciones (Trainings)
     datos = data_cap if data_cap is not None else leer_registro('capacitaciones')
@@ -193,7 +188,7 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
 
     # Use the robust Merge Intervals Helper on FILTERED contracts
     antiguedad_years = calculate_real_seniority(qualifying_contracts)
-    bienio = antiguedad_years // 2
+    bienio = min(antiguedad_years // 2, 15) # Tope legal de 15 bienios (Art. 41 Ley 19.378)
     corr_carr = 'SI' if tiene_contrato_planta else 'NO'
 
     # Update User Record with Bienios
@@ -322,7 +317,7 @@ def puntaje_nv(rut_ev_input, data_cap=None, data_u=None, data_c=None):
     saldo_acumulado += excess_training
     
     # Final Sum: Capped Training + Bienios
-    bienios_val = bienio * 534
+    bienios_val = min(bienio * 534, 8000) # Tope histórico de 8000 puntos en experiencia
     sum_f = total_training_capped + bienios_val
 
     # 8. Update DB with Final Scores and Salaries
