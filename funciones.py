@@ -1119,14 +1119,18 @@ def recalcular_todo(progress_callback=None):
         if login_data:
             roles_map = {str(l.get('ID', '')).replace('.', '').strip(): l.get('ROL', '') for l in login_data.values()}
 
+        # Mapeo real de RUT a Categoría
+        rut_to_category = {}
+        for u in latest_users.values():
+            r = str(u.get('RUT', '')).replace('.', '').strip()
+            rut_to_category[r] = u.get('CATEGORIA', 'F')
+
         # 1.5. Recalcular todas las capacitaciones (PJE_POND base)
         if latest_caps:
             if progress_callback: progress_callback(0, "Verificando puntajes base de capacitaciones...")
             for id_cap, cap in latest_caps.items():
-                rut_cap = cap.get('RUT')
-                cat_cap = 'F'
-                if rut_cap and rut_cap in latest_users:
-                    cat_cap = latest_users[rut_cap].get('CATEGORIA', 'F')
+                rut_cap = str(cap.get('RUT', '')).replace('.', '').strip()
+                cat_cap = rut_to_category.get(rut_cap, 'F')
                     
                 cap_obj = Capacitacion(
                     rut_cap,
